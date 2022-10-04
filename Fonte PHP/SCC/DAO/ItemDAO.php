@@ -187,7 +187,7 @@ class ItemDAO {
                     . " NotaFiscal_has_Item.quantidade as quantidade "
                     . " FROM NotaFiscal_has_Item "
                     . " INNER JOIN Item "
-                    . " WHERE Item_idItem = $idItem AND NotaFiscal_idNotaFiscal = $idNF";
+                    . " WHERE Item_idItem = $idItem AND NotaFiscal_idNotaFiscal = $idNF";            
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
                 $objectArray = $this->fillArray($row);

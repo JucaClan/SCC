@@ -11,7 +11,8 @@ class NotaCredito {
             $ptres,
             $fonte,
             $ug,
-            $valorRecolhido;
+            $valorRecolhido,
+            $totalEmpenhado;
 
     function __construct($idOrRow = 0) {
         if (is_int($idOrRow)) {
@@ -26,7 +27,7 @@ class NotaCredito {
             $this->ptres = $idOrRow["ptres"];
             $this->fonte = $idOrRow["fonte"];
             $this->ug = $idOrRow["ug"];
-            $this->valorRecolhido = $idOrRow["valorRecolhido"];
+            $this->valorRecolhido = $idOrRow["valorRecolhido"];            
         }
     }
 
@@ -108,6 +109,14 @@ class NotaCredito {
 
     public function setValorRecolhido($valorRecolhido) {
         $this->valorRecolhido = $valorRecolhido;
+    }
+
+    public function getTotalEmpenhado() {
+        return $this->totalEmpenhado;
+    }
+
+    public function setTotalEmpenhado($totalEmpenhado) {
+        $this->totalEmpenhado = $totalEmpenhado;
     }
 
 }

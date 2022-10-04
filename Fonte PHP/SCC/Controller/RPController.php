@@ -125,7 +125,7 @@ class RPController {
                     $secaoDAO->updateDataAtualizacao("RP");                    
                     header("Location: " . filter_input(INPUT_POST, "lastURL"));
                 } else {
-                    throw new Exception("Problema na atualização de dados no banco de dados!");
+                    throw new Exception("Problema na atualização de dados no banco de dados!<br>O tamanho do arquivo deve ser de no máximo 40 KB e a extensão deve ser .jpg ou .png.");
                 }
             } else { // Require the view of the form   
                 $this->visitanteInstance = $this->visitanteInstance->getId() > 0 ? $this->visitanteDAO->getById($this->visitanteInstance->getId()) : null;

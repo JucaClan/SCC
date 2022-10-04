@@ -89,8 +89,7 @@ class NotaFiscalDAO {
                         , `dataRemessaTesouraria` = " . (!empty($object->getDataRemessaTesouraria()) ? "'" . $object->getDataRemessaTesouraria() . "' " : "NULL ") . "
                         , `Requisicao_idRequisicao` = '" . $object->getIdRequisicao() . "'
                         , `dataLiquidacao` = " . (!empty($object->getDataLiquidacao()) ? "'" . $object->getDataLiquidacao() . "' " : "NULL ") . "                        
-                        WHERE `idNotaFiscal` = " . $object->getId() . ";";
-            echo $sql;
+                        WHERE `idNotaFiscal` = " . $object->getId() . ";";            
             $itemList = $object->getItemList();
             if (!is_null($itemList)) {
                 foreach ($itemList as $item) {
@@ -113,7 +112,7 @@ class NotaFiscalDAO {
             }
             $sql .= "COMMIT;";
             //$stmt = $c->prepare($sql);
-            //$sqlOk = $stmt ? $stmt->execute() : false;
+            //$sqlOk = $stmt ? $stmt->execute() : false;            
             $sqlOk = $c->multi_query($sql);
             $c->close();
             return $sqlOk;

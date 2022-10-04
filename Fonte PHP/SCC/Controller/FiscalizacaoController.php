@@ -10,6 +10,7 @@ require_once '../DAO/CategoriaDAO.php';
 require_once '../DAO/ItemDAO.php';
 require_once '../DAO/NotaFiscalDAO.php';
 require_once '../DAO/ProcessoDAO.php';
+require_once '../Model/Timeline.php';
 
 class FiscalizacaoController {
 
@@ -23,6 +24,8 @@ class FiscalizacaoController {
             "ug" => filter_input(INPUT_GET, "ug", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES),
             "ne" => filter_input(INPUT_GET, "ne", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES),
             "materiaisEntregues" => filter_input(INPUT_GET, "materiaisEntregues", FILTER_VALIDATE_INT),
+            "ano" => filter_input(INPUT_GET, "ano", FILTER_VALIDATE_INT),
+            "notaCreditoAtivas" => filter_input(INPUT_GET, "notaCreditoAtivas", FILTER_VALIDATE_INT)
         );
         // REQUISIÇÃO
         $this->requisicaoInstance = new Requisicao();
@@ -42,6 +45,7 @@ class FiscalizacaoController {
         $this->requisicaoInstance->setEmpresa(filter_input(INPUT_POST, "empresa", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setCnpj(filter_input(INPUT_POST, 'cnpj', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setContato(filter_input(INPUT_POST, 'contato', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
+        $this->requisicaoInstance->setDataProtocoloSalc1(filter_input(INPUT_POST, "dataProtocoloSalc1", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         // SALC
         $this->requisicaoInstance->setDataNE(filter_input(INPUT_POST, "dataNE", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setTipoNE(filter_input(INPUT_POST, "tipoNE", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
@@ -54,11 +58,14 @@ class FiscalizacaoController {
         $this->requisicaoInstance->setValorReforcado(str_replace(",", ".", filter_input(INPUT_POST, "valorReforcado", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES)));
         $this->requisicaoInstance->setObservacaoReforco(filter_input(INPUT_POST, 'observacaoReforco', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setIdNotaCreditoReforco(filter_input(INPUT_POST, "idNotaCreditoReforco", FILTER_VALIDATE_INT));
+        $this->requisicaoInstance->setDataProtocoloConformidade(filter_input(INPUT_POST, "dataProtocoloConformidade", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
+        $this->requisicaoInstance->setDataProtocoloAlmox(filter_input(INPUT_POST, "dataProtocoloAlmox", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         // CONFORMIDADE
         $this->requisicaoInstance->setDataParecer(filter_input(INPUT_POST, "dataParecer", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setParecer(filter_input(INPUT_POST, "parecer", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setObservacaoConformidade(filter_input(INPUT_POST, 'observacaoConformidade', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setDataAssinatura(filter_input(INPUT_POST, "dataAssinatura", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
+        $this->requisicaoInstance->setDataProtocoloSalc2(filter_input(INPUT_POST, "dataProtocoloSalc2", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         // ALMOXARIFADO        
         $this->requisicaoInstance->setDataEnvioNEEmpresa(filter_input(INPUT_POST, "dataEnvioNEEmpresa", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setDataPrazoEntrega(filter_input(INPUT_POST, "dataPrazoEntrega", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
@@ -105,7 +112,7 @@ class FiscalizacaoController {
         $this->notaFiscalInstance->setNf(filter_input(INPUT_POST, "nf", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->notaFiscalInstance->setCodigoVerificacao(filter_input(INPUT_POST, "codigoVerificacao", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->notaFiscalInstance->setChaveAcesso(filter_input(INPUT_POST, "chaveAcesso", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
-        $this->notaFiscalInstance->setValorNF(str_replace(",", ".", filter_input(INPUT_POST, "valorNF", FILTER_VALIDATE_FLOAT)));
+        $this->notaFiscalInstance->setValorNF(str_replace(",", ".", filter_input(INPUT_POST, "valorNF", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES)));
         $this->notaFiscalInstance->setDescricao(filter_input(INPUT_POST, "descricao", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->notaFiscalInstance->setDataEmissaoNF(filter_input(INPUT_POST, "dataEmissaoNF", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->notaFiscalInstance->setDataEntrega(filter_input(INPUT_POST, "dataEntrega", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
@@ -157,6 +164,7 @@ class FiscalizacaoController {
             $processoDAO = new ProcessoDAO();
             if (!empty($this->requisicaoInstance->getDataRequisicao())) { // validation                
                 if ($requisicaoDAO->insert($this->requisicaoInstance)) {
+                    $secaoDAO->updateDataAtualizacao("Fiscalizacao");
                     header("Location: FiscalizacaoController.php?action=getAllList");
                 } else {
                     throw new Exception("Problema na inserção de dados no banco de dados!");
@@ -179,6 +187,7 @@ class FiscalizacaoController {
             $requisicaoDAO = new RequisicaoDAO();
             if (!empty($this->requisicaoInstance->getId())) {
                 if ($requisicaoDAO->delete($this->requisicaoInstance->getId())) {
+                    $secaoDAO->updateDataAtualizacao("Fiscalizacao");
                     header("Location: FiscalizacaoController.php?action=getAllList");
                 } else {
                     throw new Exception("Problema na remoção de dados no banco de dados!");
@@ -200,6 +209,7 @@ class FiscalizacaoController {
             $processoDAO = new ProcessoDAO();
             if (!empty($this->requisicaoInstance->getDataRequisicao())) {
                 if ($requisicaoDAO->update($this->requisicaoInstance)) {
+                    $secaoDAO->updateDataAtualizacao("Fiscalizacao");
                     header("Location: FiscalizacaoController.php?action=getAllList");
                 } else {
                     throw new Exception("Problema na atualização de dados no banco de dados!");
@@ -241,7 +251,7 @@ class FiscalizacaoController {
             $requisicaoDAO = new RequisicaoDAO();
             $secaoDAO = new SecaoDAO();
             $notaCreditoDAO = new NotaCreditoDAO();
-            $itemDAO = new ItemDAO();
+            $itemDAO = new ItemDAO();            
             $notaCreditoList = $notaCreditoDAO->getAllList($this->filtro);
             $objectList = $requisicaoDAO->getAllList($this->filtro);
             $secaoList = $secaoDAO->getAllList($this->filtro);
@@ -258,6 +268,7 @@ class FiscalizacaoController {
             $secaoDAO = new SecaoDAO();
             if (!empty($this->notaCreditoInstance->getNc())) { // validation
                 if ($notaCreditoDAO->insert($this->notaCreditoInstance)) {
+                    $secaoDAO->updateDataAtualizacao("Fiscalizacao");
                     header("Location: FiscalizacaoController.php?action=getAllList");
                 } else {
                     throw new Exception("Problema na inserção de dados no banco de dados!");
@@ -276,8 +287,10 @@ class FiscalizacaoController {
         try {
             $this->getFormData();
             $notaCreditoDAO = new NotaCreditoDAO();
+            $secaoDAO = new SecaoDAO();
             if (!empty($this->notaCreditoInstance->getId())) {
                 if ($notaCreditoDAO->delete($this->notaCreditoInstance)) {
+                    $secaoDAO->updateDataAtualizacao("Fiscalizacao");
                     header("Location: FiscalizacaoController.php?action=getAllList");
                 } else {
                     throw new Exception("Problema na remoção de dados no banco de dados!");
@@ -292,8 +305,10 @@ class FiscalizacaoController {
         try {
             $this->getFormData();
             $notaCreditoDAO = new NotaCreditoDAO();
+            $secaoDAO = new SecaoDAO();
             if (!empty($this->notaCreditoInstance->getNc())) {
                 if ($notaCreditoDAO->update($this->notaCreditoInstance)) {
+                    $secaoDAO->updateDataAtualizacao("Fiscalizacao");
                     header("Location: FiscalizacaoController.php?action=getAllList");
                 } else {
                     throw new Exception("Problema na atualização de dados no banco de dados!");
@@ -315,6 +330,7 @@ class FiscalizacaoController {
             $itemDAO = new ItemDAO();
             if (!empty($this->notaFiscalInstance->getTipoNf())) { // validation
                 if ($notaFiscalDAO->insert($this->notaFiscalInstance)) {
+                    $secaoDAO->updateDataAtualizacao("Fiscalizacao");
                     header("Location: FiscalizacaoController.php?action=update&id=" . $this->notaFiscalInstance->getIdRequisicao() . "#notasFiscais");
                 } else {
                     throw new Exception("Problema na inserção de dados no banco de dados!");
@@ -334,9 +350,11 @@ class FiscalizacaoController {
         try {
             $this->getFormData();
             $notaFiscalDAO = new NotaFiscalDAO();
+            $secaoDAO = new SecaoDAO();
             $itemDAO = new ItemDAO();
             if (!empty($this->notaFiscalInstance->getTipoNf())) {
                 if ($notaFiscalDAO->update($this->notaFiscalInstance)) {
+                    $secaoDAO->updateDataAtualizacao("Fiscalizacao");
                     header("Location: FiscalizacaoController.php?action=update&id=" . $this->notaFiscalInstance->getIdRequisicao() . "#notasFiscais");
                 } else {
                     throw new Exception("Problema na atualização de dados no banco de dados!");
@@ -355,9 +373,11 @@ class FiscalizacaoController {
         try {
             $this->getFormData();
             $notaFiscalDAO = new NotaFiscalDAO();
+            $secaoDAO = new SecaoDAO();
             if (!empty($this->notaFiscalInstance->getId())) {
                 $this->notaFiscalInstance = $notaFiscalDAO->getById($this->notaFiscalInstance->getId());
                 if ($notaFiscalDAO->delete($this->notaFiscalInstance)) {
+                    $secaoDAO->updateDataAtualizacao("Fiscalizacao");
                     header("Location: FiscalizacaoController.php?action=update&id=" . $this->notaFiscalInstance->getIdRequisicao() . "#notasFiscais");
                 } else {
                     throw new Exception("Problema na remoção de dados no banco de dados!");

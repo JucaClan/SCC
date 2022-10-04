@@ -47,7 +47,7 @@ $ADICIONAR_S1 = array("S1", "SecInfo");
 $EDITAR_S1 = array("S1", "SecInfo");
 $EXCLUIR_S1 = array("SecInfo");
 
-$LISTAR_JURIDICO = array_merge(array("S1"), array_merge(array("Juridico"), $ADMINISTRADORES));
+$LISTAR_JURIDICO = $TODAS_SECOES;
 $ADICIONAR_JURIDICO = array("Juridico", "SecInfo");
 $EDITAR_JURIDICO = array("Juridico", "SecInfo");
 $EXCLUIR_JURIDICO = array("Juridico", "SecInfo");

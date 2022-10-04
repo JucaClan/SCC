@@ -135,7 +135,7 @@ class S1Controller {
         $this->mapaDaForcaInstance->setTen2_pttc_existente(filter_input(INPUT_POST, "ten2_pttc_existente", FILTER_VALIDATE_INT));
         $this->mapaDaForcaInstance->setSten_pttc_existente(filter_input(INPUT_POST, "sten_pttc_existente", FILTER_VALIDATE_INT));
         $this->mapaDaForcaInstance->setSgt1_pttc_existente(filter_input(INPUT_POST, "sgt1_pttc_existente", FILTER_VALIDATE_INT));
-        $this->mapaDaForcaInstance->setSgt2_pttc_existente(filter_input(INPUT_POST, "sgt2_pttc_existente", FILTER_VALIDATE_INT));        
+        $this->mapaDaForcaInstance->setSgt2_pttc_existente(filter_input(INPUT_POST, "sgt2_pttc_existente", FILTER_VALIDATE_INT));
         $this->mapaDaForcaInstance->setEncostados(filter_input(INPUT_POST, "encostados", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->mapaDaForcaInstance->setAgregados(filter_input(INPUT_POST, "agregados", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
     }
@@ -212,6 +212,23 @@ class S1Controller {
         }
     }
 
+    public function processoView() {
+        try {
+            $this->getFormData();
+            $this->processoDAO = new ProcessoDAO();
+            $secaoDAO = new SecaoDAO();
+            // Require the view of the form            
+            $this->processoInstance = $this->processoInstance->getId() > 0 ? $this->processoDAO->getById($this->processoInstance->getId()) : null;
+            $object = $this->processoInstance;
+            if ($object == null) {
+                throw new Exception("Problema na obtenção de dados no controlador!");
+            }
+            require_once '../View/view_S1_processo_edit.php';
+        } catch (Exception $e) {
+            require_once '../View/view_error.php';
+        }
+    }
+
     /**
      * Delete object on the database
      */
@@ -278,6 +295,9 @@ switch ($action) {
         break;
     case "processo_update":
         !isAdminLevel($EDITAR_JURIDICO) ? redirectToLogin() : $controller->processoUpdate();
+        break;
+    case "processo_view":
+        !isAdminLevel($LISTAR_JURIDICO) ? redirectToLogin() : $controller->processoView();
         break;
     case "processo_delete":
         !isAdminLevel($EXCLUIR_JURIDICO) ? redirectToLogin() : $controller->processoDelete();

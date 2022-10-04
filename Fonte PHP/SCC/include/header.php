@@ -43,8 +43,8 @@ require_once '../include/comum.php';
         <style type="text/css">
             .container h2 {
                 font-size: 16px;
-                margin-top: 14px;                
-            }   
+                margin-top: 14px;
+            }
             .container h2 button {
                 font-size: 14px;
                 padding: 2px 7px 2px 7px;
@@ -148,7 +148,7 @@ require_once '../include/comum.php';
             <?php } ?>
             <?php if (isAdminLevel($LISTAR_FISCALIZACAO)) { ?>
                 <li class="nav-item">
-                    <a class="nav-link <?= substr_count($address, "FiscalizacaoController") > 0 ? "active" : ""; ?>" href='../Controller/FiscalizacaoController.php?action=getAllList'>
+                    <a class="nav-link <?= substr_count($address, "FiscalizacaoController") > 0 ? "active" : ""; ?>" href='../Controller/FiscalizacaoController.php?action=getAllList&ano=<?= date('Y'); ?>'>
                         <img src="../include/imagens/fiscalizacao.png" height="35" hspace="2">Fiscalização <sub>em testes</sub>
                     </a>
                 </li>

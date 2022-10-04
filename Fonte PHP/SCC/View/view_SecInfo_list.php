@@ -29,6 +29,7 @@
 require_once '../include/header.php';
 $solucao = filter_input(INPUT_GET, "solucao", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $hoje = new DateTime();
+$alert = "";
 $dateDif = date_diff(new DateTime($secaoDAO->getBySecao("SecInfo")->getDataAtualizacaoOriginal()), $hoje);
 if ($dateDif->format('%R') == "+" && $dateDif->format('%a') >= 7) {
     $color = "red";

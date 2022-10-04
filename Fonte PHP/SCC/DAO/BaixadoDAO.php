@@ -111,15 +111,15 @@ class BaixadoDAO {
             }
             $sql = "SELECT *, "
                     . "DATE_FORMAT(dataAtualizacao, '%d/%m/%Y') as dataAtualizacao, DATE_FORMAT(dataAtualizacao, '%Y/%m/%d') as dataAtualizacaoOriginal "
-                    . " FROM Baixado "                    
+                    . " FROM Baixado "
                     . $sqlFiltro
-                    . " ORDER BY dataAtualizacao ";            
+                    . " ORDER BY dataAtualizacao ";
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
                 $objectArray = $this->fillArray($row);
                 $lista[] = new Baixado($objectArray);
             }
-            $c->close();            
+            $c->close();
             return isset($lista) ? $lista : null;
         } catch (Exception $e) {
             throw($e);
@@ -130,6 +130,7 @@ class BaixadoDAO {
         try {
             $c = connect();
             $sql = "SELECT * "
+                    . ", DATE_FORMAT(dataAtualizacao, '%d/%m/%Y') as dataAtualizacaoFormatada, DATE_FORMAT(dataAtualizacao, '%Y/%m/%d') as dataAtualizacaoOriginal "
                     . " FROM Baixado "
                     . " WHERE idBaixado = $id";
             $result = $c->query($sql);

@@ -50,6 +50,11 @@ function redirectToLogin() {
     header("Location: ../View/view_usuario_login.php?error=1");
 }
 
+function dateFormat($date) {
+    $dateExploded = explode("-", $date);
+    return count($dateExploded) === 3 ? "$dateExploded[2]/$dateExploded[1]/$dateExploded[0]" : $date;
+}
+
 function ip_in_range($ip, $range) {
     if (strpos($range, '/') == false) {
         $range .= '/32';

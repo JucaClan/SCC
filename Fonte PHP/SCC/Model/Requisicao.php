@@ -16,6 +16,7 @@ class Requisicao {
             $empresa,
             $cnpj,
             $contato,
+            $dataProtocoloSalc1,
             // SALC
             $dataNE,
             $tipoNE,
@@ -28,11 +29,14 @@ class Requisicao {
             $valorReforcado,
             $observacaoReforco,
             $idNotaCreditoReforco,
+            $dataProtocoloConformidade,
+            $dataProtocoloAlmox,
             // Conformidade
             $dataParecer,
             $parecer,
             $observacaoConformidade,
             $dataAssinatura,
+            $dataProtocoloSalc2,
             // Almox
             $dataEnvioNEEmpresa,
             $dataPrazoEntrega,
@@ -43,10 +47,12 @@ class Requisicao {
             $idProcesso,
             // Itens
             $itemList,
-            // Formatações pré-definidas
-            $dataRequisicaoFormatada,
-            $dataEnvioNEFormatada,
-            $dataNEFormatada;
+            // Notas Fiscais            
+            $hasNFsParaEntrega,
+            $hasNFsParaLiquidar,
+            $hasNFsParaRemessa,
+            // Timeline
+            $timeline;
 
     function __construct($idOrRow = 0) {
         if (is_int($idOrRow)) {
@@ -66,6 +72,7 @@ class Requisicao {
             $this->empresa = $idOrRow["empresa"]; //
             $this->cnpj = $idOrRow["cnpj"];
             $this->contato = $idOrRow["contato"];
+            $this->dataProtocoloSalc1 = $idOrRow["dataProtocoloSalc1"];
             // SALC
             $this->dataNE = $idOrRow["dataNE"];
             $this->tipoNE = $idOrRow["tipoNE"];
@@ -78,11 +85,14 @@ class Requisicao {
             $this->valorReforcado = $idOrRow["valorReforcado"];
             $this->observacaoReforco = $idOrRow["observacaoReforco"];
             $this->idNotaCreditoReforco = $idOrRow["idNotaCreditoReforco"];
+            $this->dataProtocoloConformidade = $idOrRow["dataProtocoloConformidade"];
+            $this->dataProtocoloAlmox = $idOrRow["dataProtocoloAlmox"];
             // Conformidade
             $this->dataParecer = $idOrRow["dataParecer"];
             $this->parecer = $idOrRow["parecer"];
             $this->observacaoConformidade = $idOrRow["observacaoConformidade"];
             $this->dataAssinatura = $idOrRow["dataAssinatura"];
+            $this->dataProtocoloSalc2 = $idOrRow["dataProtocoloSalc2"];
             // Almoxarifado                                              
             $this->dataEnvioNEEmpresa = $idOrRow["dataEnvioNEEmpresa"];
             $this->dataPrazoEntrega = $idOrRow["dataPrazoEntrega"];
@@ -93,9 +103,6 @@ class Requisicao {
             $this->idProcesso = $idOrRow["idProcesso"];
             // Outros
             $this->itemList = $idOrRow["itemList"];
-            $this->dataRequisicaoFormatada = $idOrRow["dataRequisicaoFormatada"];
-            $this->dataEnvioNEFormatada = $idOrRow["dataEnvioNEFormatada"];
-            $this->dataNEFormatada = $idOrRow["dataNEFormatada"];
         }
     }
 
@@ -239,18 +246,6 @@ class Requisicao {
         return $this->itemList;
     }
 
-    function getDataRequisicaoFormatada() {
-        return $this->dataRequisicaoFormatada;
-    }
-
-    function getDataEnvioNEFormatada() {
-        return $this->dataEnvioNEFormatada;
-    }
-
-    function getDataNEFormatada() {
-        return $this->dataNEFormatada;
-    }
-
     function setId($id) {
         $this->id = $id;
     }
@@ -391,24 +386,76 @@ class Requisicao {
         $this->itemList = $itemList;
     }
 
-    function setDataRequisicaoFormatada($dataRequisicaoFormatada) {
-        $this->dataRequisicaoFormatada = $dataRequisicaoFormatada;
-    }
-
-    function setDataEnvioNEFormatada($dataEnvioNEFormatada) {
-        $this->dataEnvioNEFormatada = $dataEnvioNEFormatada;
-    }
-
-    function setDataNEFormatada($dataNEFormatada) {
-        $this->dataNEFormatada = $dataNEFormatada;
-    }
-
     function getIdProcesso() {
         return $this->idProcesso;
     }
 
     function setIdProcesso($idProcesso) {
         $this->idProcesso = $idProcesso;
+    }
+
+    public function getTimeline() {
+        return $this->timeline;
+    }
+
+    public function setTimeline($timeline) {
+        $this->timeline = $timeline;
+    }
+
+    public function getHasNFsParaEntrega() {
+        return $this->hasNFsParaEntrega;
+    }
+
+    public function setHasNFsParaEntrega($hasNFsParaEntrega) {
+        $this->hasNFsParaEntrega = $hasNFsParaEntrega;
+    }
+
+    public function getHasNFsParaLiquidar() {
+        return $this->hasNFsParaLiquidar;
+    }
+
+    public function setHasNFsParaLiquidar($hasNFsParaLiquidar) {
+        $this->hasNFsParaLiquidar = $hasNFsParaLiquidar;
+    }
+
+    public function getHasNFsParaRemessa() {
+        return $this->hasNFsParaRemessa;
+    }
+
+    public function setHasNFsParaRemessa($hasNFsParaRemessa) {
+        $this->hasNFsParaRemessa = $hasNFsParaRemessa;
+    }
+
+    function getDataProtocoloSalc1() {
+        return $this->dataProtocoloSalc1;
+    }
+
+    function getDataProtocoloConformidade() {
+        return $this->dataProtocoloConformidade;
+    }
+
+    function getDataProtocoloAlmox() {
+        return $this->dataProtocoloAlmox;
+    }
+
+    function getDataProtocoloSalc2() {
+        return $this->dataProtocoloSalc2;
+    }
+
+    function setDataProtocoloSalc1($dataProtocoloSalc1) {
+        $this->dataProtocoloSalc1 = $dataProtocoloSalc1;
+    }
+
+    function setDataProtocoloConformidade($dataProtocoloConformidade) {
+        $this->dataProtocoloConformidade = $dataProtocoloConformidade;
+    }
+
+    function setDataProtocoloAlmox($dataProtocoloAlmox) {
+        $this->dataProtocoloAlmox = $dataProtocoloAlmox;
+    }
+
+    function setDataProtocoloSalc2($dataProtocoloSalc2) {
+        $this->dataProtocoloSalc2 = $dataProtocoloSalc2;
     }
 
 }

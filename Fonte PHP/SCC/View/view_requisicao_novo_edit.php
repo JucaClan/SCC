@@ -33,7 +33,7 @@ require_once '../include/header.php';
 <script src="../include/js/jquery-mask/jquery.mask.min.js"></script>
 <script type="text/javascript">
     function excluir(id, idRequisicao) {
-        if (confirm('Tem certeza que deseja excluir esse item?\n\nAo prosseguir, os dados editados nesse formulário não serão salvos. A página irá recarregar com a exclusão do item, exibindo os últimos dados salvos ao clicar no botão Salvar.')) {
+        if (confirm('Tem certeza que deseja excluir esse item?\n\nAo prosseguir, os dados editados nesse formulário não serão salvos. A página irá recarregar com a exclusão do item, exibindo os últimos dados salvos ao clicar no botão Salvar. Atentar para correção de valores que deve ser feita manualmente após a exclusão do item.')) {
             document.location = 'FiscalizacaoController.php?action=delete_item&idItem=' + id + "&id=" + idRequisicao;
         }
         return false;
@@ -137,7 +137,7 @@ require_once '../include/header.php';
         border-bottom: 2px solid;
         border-radius: 70px;
         border-color: #ffcccc;
-        height: 80px;
+        height: 95px;
         /*background-color: #ffcccc;*/
     }
 
@@ -150,7 +150,7 @@ require_once '../include/header.php';
                 border-right: 2px solid; */
         border-radius: 70px;
         border-color: #00cc00;
-        height: 80px;
+        height: 95px;
         background-color: #ccffcc;
     }
 
@@ -163,7 +163,7 @@ require_once '../include/header.php';
         border-bottom: 2px solid;
         border-radius: 70px;
         border-color: red;
-        height: 80px;
+        height: 95px;
         /*background-color: #ffcccc;*/
     }
 
@@ -197,54 +197,65 @@ require_once '../include/header.php';
     <form accept-charset="UTF-8" action="../Controller/FiscalizacaoController.php?action=<?= $object->getId() > 0 ? 'update' : 'insert' ?>&id=<?= $object->getId() ?>" class="needs-validation" novalidate method="post" name="requisicao" id="requisicao">
         <h2><?= $object->getId() > 0 ? "Editar" : "Cadastrar" ?> Requisição | <a href="#" onclick="document.location = 'FiscalizacaoController.php?action=getAllList';">Voltar</a> | <button type="submit" class="btn btn-success">Salvar</button></h2>    
         <hr> 
+        <?php
+        $button = "<div class='form-group' align='center'><button type='submit' class='btn btn-success'>Salvar</button></div>";
+        $timeline = new Timeline($object);
+        $object->setTimeline($timeline);
+        $requisitante = $timeline->getRequisitante();
+        $salc1 = $timeline->getSalc1();
+        $conformidade = $timeline->getConformidade();
+        $salc2 = $timeline->getSalc2();
+        $almox = $timeline->getAlmox();
+        $tesouraria = $timeline->getTesouraria();
+        ?>
         <div>
             <ul class="timeline">
                 <li>
-                    <div class="timestampNext" id="requisitanteTimestamp">
-                        REQUISITANTE
+                    <div class="timestamp<?= $requisitante[0]; ?>" id="requisitanteTimestamp">
+                        REQUISITANTE 
                     </div>
-                    <div class="statusNext" id="requisitanteStatus">
-                        <h4>Aguardando...</h4>
+                    <div class="status<?= $requisitante[0]; ?>" id="requisitanteStatus">
+                        <h4><?= $requisitante[1]; ?></h4>
                     </div>
                 </li>
                 <li>
-                    <div class="timestamp" id="salc1Timestamp">
+                    <div class="timestamp<?= $salc1[0]; ?>" id="salc1Timestamp">
                         SALC
                     </div>
-                    <div class="status" id="salc1Status">
-                        <h4></h4>
+                    <div class="status<?= $salc1[0]; ?>" id="salc1Status">
+                        <h4><?= $salc1[1]; ?></h4>
                     </div>
                 </li>
                 <li>
-                    <div class="timestamp" id="conformidadeTimestamp">
+                    <div class="timestamp<?= $conformidade[0]; ?>" id="conformidadeTimestamp">
                         CONFORMIDADE
                     </div>
-                    <div class="status" id="conformidadeStatus">
-                        <h4></h4>
+                    <div class="status<?= $conformidade[0]; ?>" id="conformidadeStatus">
+                        <h4><?= $conformidade[1]; ?></h4>
                     </div>
                 </li>
                 <li>
-                    <div class="timestamp" id="salc2Timestamp">
+                    <div class="timestamp<?= $salc2[0]; ?>" id="salc2Timestamp">
                         SALC
                     </div>
-                    <div class="status" id="salc2Status">
-                        <h4></h4>
+                    <div class="status<?= $salc2[0]; ?>" id="salc2Status">
+                        <h4><?= $salc2[1]; ?></h4>
                     </div>
                 </li>
                 <li>
-                    <div class="timestamp" id="almoxarifadoTimestamp">
+                    <div class="timestamp<?= $almox[0]; ?>" id="almoxarifadoTimestamp">
                         ALMOXARIFADO
                     </div>
-                    <div class="status" id="almoxarifadoStatus">
-                        <h4></h4>
+                    <div class="status<?= $almox[0]; ?>" id="almoxarifadoStatus">
+                        <h4><?= $almox[1]; ?></h4>
                     </div>
                 </li>
                 <li>
-                    <div class="timestamp" id="tesourariaTimestamp">
+                    <div class="timestamp<?= $tesouraria[0]; ?>" id="tesourariaTimestamp">
                         TESOURARIA
                     </div>
-                    <div class="status" id="tesourariaStatus">
-                        <h4></h4>
+                    <div class="status<?= $tesouraria[0]; ?>" id="tesourariaStatus">
+                        <h4><?= $tesouraria[1]; ?></h4>
                     </div>
                 </li>
             </ul>
@@ -345,6 +356,20 @@ require_once '../include/header.php';
                                             <option value="<?= $notaCredito->getId() ?>" <?= $notaCredito->getId() == $object->getIdNotaCredito() ? " selected" : "" ?>><?= $notaCredito->getNc() ?></option>
                                             <?php
                                         }
+                                    } else if ($object->getIdNotaCredito() > 0) {
+                                        $notaCredito = $notaCreditoDAO->getById($object->getIdNotaCredito());
+                                        ?>
+                                        <option value="<?= $notaCredito->getId() ?>" <?= $notaCredito->getId() == $object->getIdNotaCredito() ? " selected" : "" ?>><?= $notaCredito->getNc() ?></option>
+                                        <?php
+                                    } else {
+                                        $notaCreditoList = $notaCreditoDAO->getAllList(array("notaCreditoAtivas" => 0));
+                                        if (!empty($notaCreditoList) && $notaCreditoList != null) {
+                                            foreach ($notaCreditoList as $notaCredito) {
+                                                ?>
+                                                <option value="<?= $notaCredito->getId() ?>" <?= $notaCredito->getId() === $object->getIdNotaCredito() ? " selected" : "" ?>><?= $notaCredito->getNc() ?></option>
+                                                <?php
+                                            }
+                                        }
                                     }
                                     ?>
                                 </select>
@@ -402,7 +427,7 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Identificador da modalidade</span>
-                                <input type="text" class="form-control" id="numeroModalidade" placeholder="" name="numeroModalidade" maxlength="7" onkeypress="return event.charCode >= 48 && event.charCode <= 57;" value="<?= $object->getNumeroModalidade() ?>" required  <?= !$readonly ? "" : "disabled" ?>/>
+                                <input type="text" class="form-control" id="numeroModalidade" placeholder="Exemplo: 01  (Cotação Eletrônica nº 01)" name="numeroModalidade" maxlength="7" onkeypress="return event.charCode >= 48 && event.charCode <= 57;" value="<?= $object->getNumeroModalidade() ?>" required  <?= !$readonly ? "" : "disabled" ?> onchange="checkZeroFillFields(this);" />
                             </div>                    
                         </div>
                         <div class="col">
@@ -414,8 +439,8 @@ require_once '../include/header.php';
                     <div class="form-row"> 
                         <div class="col">                    
                             <div class="input-group-prepend">
-                                <span class="input-group-text">Unidade Gestora</span>
-                                <input type="text" class="form-control" id="ug" placeholder="Unidade Gestora" name="ug" maxlength="6" onkeypress="return event.charCode >= 48 && event.charCode <= 57;" value="<?= $object->getUg() ?>" required <?= !$readonly ? "" : "disabled" ?> />
+                                <span class="input-group-text">Código UG</span>
+                                <input type="text" class="form-control" id="ug" placeholder="Exemplo: 160477" name="ug" maxlength="6" onkeypress="return event.charCode >= 48 && event.charCode <= 57;" value="<?= $object->getUg() ?>" required <?= !$readonly ? "" : "disabled" ?> onchange="checkZeroFillFields(this);" />
                             </div>                    
                         </div>
                         <div class="col">
@@ -427,8 +452,8 @@ require_once '../include/header.php';
                     <div class="form-row"> 
                         <div class="col">                    
                             <div class="input-group-prepend">
-                                <span class="input-group-text">Organização Militar da modalidade</span>
-                                <input type="text" class="form-control" id="omModalidade" placeholder="Organização Militar" name="omModalidade" maxlength="125" value="<?= $object->getOmModalidade() ?>" required <?= !$readonly ? "" : "disabled" ?> />
+                                <span class="input-group-text">UG</span>
+                                <input type="text" class="form-control" id="omModalidade" placeholder="Exemplo: 2º BE Cmb" name="omModalidade" maxlength="125" value="<?= $object->getOmModalidade() ?>" required <?= !$readonly ? "" : "disabled" ?> />
                             </div>                             
                         </div>
                         <div class="col">
@@ -441,7 +466,7 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Empresa</span>
-                                <input type="text" class="form-control" id="empresa" placeholder="Nome da Empresa" name="empresa" maxlength="250" value="<?= $object->getEmpresa() ?>" required <?= !$readonly ? "" : "disabled" ?> />
+                                <input type="text" class="form-control" id="empresa" placeholder="Nome da Empresa responsável" name="empresa" maxlength="250" value="<?= $object->getEmpresa() ?>" required <?= !$readonly ? "" : "disabled" ?> />
                             </div>                    
                         </div>
                         <div class="col">
@@ -454,7 +479,7 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">CNPJ</span>
-                                <input type="text" class="form-control" id="cnpj" placeholder="CNPJ" name="cnpj" maxlength="18"  onkeypress="return event.charCode >= 48 && event.charCode <= 57;" value="<?= $object->getCnpj() ?>" required <?= !$readonly ? "" : "disabled" ?> />
+                                <input type="text" class="form-control" id="cnpj" placeholder="CNPJ da Empresa responsável" name="cnpj" maxlength="18"  onkeypress="return event.charCode >= 48 && event.charCode <= 57;" value="<?= $object->getCnpj() ?>" required <?= !$readonly ? "" : "disabled" ?> />
                             </div>                    
                         </div>
                         <div class="col">
@@ -467,14 +492,28 @@ require_once '../include/header.php';
                         <div class="col">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Contato</span>
-                                <textarea class="form-control" name="contato" placeholder="Informações de contato com a empresa" maxlength="520" required <?= !$readonly ? "" : "disabled" ?>><?= $object->getContato() ?></textarea>
+                                <textarea class="form-control" name="contato" placeholder="Informações de contato da Empresa responsável" maxlength="520" required <?= !$readonly ? "" : "disabled" ?>><?= $object->getContato() ?></textarea>
                             </div>
                         </div>
                         <div class="col">
                             <span class="explanation">Informações de contato da empresa responsável pelos materiais.</span>
                         </div>
                     </div>
-                </div>                
+                </div>  
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col">                    
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Data Protocolo na SALC</span>
+                                <input type="date" class="form-control" id="dataProtocoloSalc1" name="dataProtocoloSalc1" value="<?= $object->getDataProtocoloSalc1() ?>" <?= !$readonly ? "" : "disabled" ?> />
+                            </div>                    
+                        </div>
+                        <div class="col">
+                            <span class="explanation">Data em que a requisição foi protocolada na SALC.</span>
+                        </div>
+                    </div>
+                </div>
+                <?= $button ?>
             </div>
         </div>        
         <br>        
@@ -544,7 +583,7 @@ require_once '../include/header.php';
                             <th>Número do item</th>
                             <th>Descrição</th>
                             <th>Quantidade</th>
-                            <th>Valor</th>
+                            <th>Valor Unitário</th>
                             <th>&nbsp;</th>
                         </tr>
                         <?php
@@ -557,7 +596,7 @@ require_once '../include/header.php';
                                     <td width="10%"><?= $item->getNumeroItem() ?></td>
                                     <td width="60%"><?= $item->getDescricao() ?></td>
                                     <td width="10%"><?= $item->getQuantidade() ?></td>
-                                    <td width="10%"><?= $item->getValor() ?></td>
+                                    <td width="10%">R$ <?= $item->getValor() ?></td>
                                     <td width="10%"><input type="button" class="btn btn-danger" value="Excluir" onclick="excluir(<?= $item->getId() . ", " . $object->getId() ?>);" <?= !$readonly ? "" : "disabled" ?>></td> 
                                     <?php
                                 }
@@ -586,7 +625,7 @@ require_once '../include/header.php';
                         <div class="form-row">
                             <div class="col">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text">Valor</span>
+                                    <span class="input-group-text">Valor Unitário</span>
                                     <input type="text" class="form-control" id="valor" name="valor" maxlength="25" onkeypress="return event.charCode === 44 || (event.charCode >= 48 && event.charCode <= 57);" onchange="fillValor();" <?= !$readonly ? "" : "disabled" ?> />
                                 </div>
                             </div>
@@ -614,7 +653,7 @@ require_once '../include/header.php';
                         novoItem += "<div class = 'col'>";
                         novoItem += "<div class = 'input-group-prepend'><span class = 'input-group-text'>Descrição</span><input type = 'text' class = 'form-control' id = 'descricaoItem" + total + "' name = 'descricaoItem" + total + "' maxlength = '500' /></div></div></div></div>";
                         novoItem += "<div class = 'form-group'><div class = 'form-row'><div class = 'col'>";
-                        novoItem += "<div class = 'input-group-prepend'><span class = 'input-group-text'>Valor</span><input type = 'text' class = 'form-control' id = 'valor" + total + "' name = 'valor" + total + "' maxlength = '25' onkeypress='return event.charCode === 44 || (event.charCode >= 48 && event.charCode <= 57);' onchange='fillValor();' /></div></div>";
+                        novoItem += "<div class = 'input-group-prepend'><span class = 'input-group-text'>Valor Unitário</span><input type = 'text' class = 'form-control' id = 'valor" + total + "' name = 'valor" + total + "' maxlength = '25' onkeypress='return event.charCode === 44 || (event.charCode >= 48 && event.charCode <= 57);' onchange='fillValor();' /></div></div>";
                         novoItem += "<div class = 'col'>";
                         novoItem += "<div class = 'input-group-prepend'><span class = 'input-group-text'>Quantidade</span><input type = 'number' class = 'form-control' id = 'quantidade" + total + "' name = 'quantidade" + total + "' maxlength = '25' onkeypress='return event.charCode >= 48 && event.charCode <= 57;' onchange='fillValor();' /></div></div></div></div>";
                         itens.innerHTML = itens.innerHTML + novoItem;
@@ -625,11 +664,11 @@ require_once '../include/header.php';
                         var quantidade = parseInt(document.getElementById("quantidade").value.replace(",", "."));
                         var totalValue = <?= $totalValue ?> + (valor * quantidade);
                         for (i = 1; i <= total; i++) {
-                            valor = parseFloat(document.getElementById("valor" + i).value.replace(",", "."));
+                            valor = parseFloat(document.getElementById("valor" + i).value.replace(",", ".")).toFixed(2);
                             quantidade = parseInt(document.getElementById("quantidade" + i).value.replace(",", "."));
-                            totalValue = parseFloat(totalValue) + (valor * quantidade);
+                            totalValue = parseFloat(totalValue).toFixed(2) + (valor * quantidade);
                         }
-                        document.getElementById("valorNE").value = totalValue.toString().replace(".", ",");
+                        document.getElementById("valorNE").value = !isNaN(totalValue) ? parseFloat(totalValue).toFixed(2).toString().replace(".", ",") : 0;
                     }
                 </script>
                 <div class="form-group">
@@ -667,7 +706,21 @@ require_once '../include/header.php';
                             <span class="explanation">Observações relativas aos procedimentos da SALC.</span>
                         </div>
                     </div>                    
-                </div>                                                                              
+                </div> 
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col">                    
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Data Protocolo na Conformidade</span>
+                                <input type="date" class="form-control" id="dataProtocoloConformidade" name="dataProtocoloConformidade" value="<?= $object->getDataProtocoloConformidade() ?>" <?= !$readonly ? "" : "disabled" ?> />
+                            </div>                    
+                        </div>
+                        <div class="col">
+                            <span class="explanation">Data em que a requisição foi protocolada na Conformidade.</span>
+                        </div>
+                    </div>
+                </div>
+                <?= $button ?>
             </div>
         </div>
         <br>        
@@ -735,6 +788,20 @@ require_once '../include/header.php';
                         </div>
                     </div>
                 </div>
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col">                    
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Data Protocolo na SALC</span>
+                                <input type="date" class="form-control" id="dataProtocoloSalc2" name="dataProtocoloSalc2" value="<?= $object->getDataProtocoloSalc2() ?>" <?= !$readonly ? "" : "disabled" ?> />
+                            </div>                    
+                        </div>
+                        <div class="col">
+                            <span class="explanation">Data em que a requisição foi protocolada na SALC pela CONFORMIDADE.</span>
+                        </div>
+                    </div>
+                </div>
+                <?= $button ?>
             </div>
         </div>
         <br> 
@@ -881,6 +948,20 @@ require_once '../include/header.php';
                         </div>
                     </div> 
                 </div>
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col">                    
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Data Protocolo no Almoxarifado</span>
+                                <input type="date" class="form-control" id="dataProtocoloAlmox" name="dataProtocoloAlmox" value="<?= $object->getDataProtocoloAlmox() ?>" <?= !$readonly ? "" : "disabled" ?> />
+                            </div>                    
+                        </div>
+                        <div class="col">
+                            <span class="explanation">Data em que a requisição foi protocolada no Almoxarifado.</span>
+                        </div>
+                    </div>
+                </div>
+                <?= $button ?>
             </div>
         </div>
         <br>
@@ -902,7 +983,7 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Data de envio NE à empresa</span>
-                                <input type="date" class="form-control" id="dataEnvioNEEmpresa" name="dataEnvioNEEmpresa" value="<?= $object->getDataEnvioNEEmpresa(); ?>"/>
+                                <input type="date" class="form-control" id="dataEnvioNEEmpresa" name="dataEnvioNEEmpresa" value="<?= $object->getDataEnvioNEEmpresa(); ?>" onchange="checkDataPrazoEntrega(this.value);"/>
                             </div>                    
                         </div>
                         <div class="col">
@@ -995,7 +1076,7 @@ require_once '../include/header.php';
                     <div class="form-row">
                         <div class="col">                    
                             <div class="input-group-prepend">
-                                <span class="input-group-text">Processo Administrativo <?= $object->getIdProcesso() ?></span>
+                                <span class="input-group-text">Processo Administrativo</span>
                                 <select name="idProcesso" class="form-control">
                                     <option>Selecione o processo administrativo</option>
                                     <?php
@@ -1014,76 +1095,77 @@ require_once '../include/header.php';
                             <span class="explanation">Processo Administrativo aberto para apuração.</span>
                         </div>                                                
                     </div>
-                </div>
-                <div class="form-group">
-                    <div class="form-row">
-                        <div class="col">                    
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">Observação</span>
-                                <textarea class="form-control" id="observacaoAlmox" name="observacaoAlmox" maxlength="520" <?= !$readonly ? "" : "disabled" ?>><?= $object->getObservacaoAlmox(); ?></textarea>
-                            </div>                    
-                        </div>
-                        <div class="col">
-                            <span class="explanation">Observações relativas ao Almoxarifado.</span>
-                        </div>
-                    </div>
-                </div>            
-                <a name="notasFiscais">&nbsp;</a>                
-                <div class="conteudo" style="border: 1px dashed lightskyblue; padding: 7px;">
-                    <h2 class="alert alert-info">
-                        <img src="../include/imagens/minimizar.png" width="25" height="25" onclick="minimize('tesouraria');"> 
-                        <img src="../include/imagens/maximizar.png" width="25" height="25" onclick="maximize('tesouraria');"> 
-                        ALMOXARIFADO / TESOURARIA
-                    </h2>
-                    <div id="tesouraria">                                                                            
-                        <table class="table table-bordered" id="notasCredito">
-                            <thead>                            
-                                <tr>
-                                    <th>Tipo NF</th>   
-                                    <th>NF</th>
-                                    <th>Valor NF</th>
-                                    <th>Data Entrega</th>
-                                    <th>Data Remessa Tesouraria</th>                             
-                                    <th>Data Liquidação</th>                                
-                                    <th>
-                                        <?php if (isAdminLevel($ADICIONAR_FISCALIZACAO)) { ?>
-                                            <a href="../Controller/FiscalizacaoController.php?action=insert_nf&idRequisicao=<?= $object->getId(); ?>"><img src='../include/imagens/adicionar.png' width='25' height='25' title='Adicionar'></a>
-                                        <?php } ?>
-                                    </th>                
-                                </tr>
-                            </thead>        
-                            <tbody>
-                                <?php
-                                if (isset($notaFiscalList) && is_array($notaFiscalList) && isAdminLevel($LISTAR_FISCALIZACAO)) {
-                                    foreach ($notaFiscalList as $object) {
-                                        ?> 
-                                        <tr>
-                                            <td><?= $object->getTipoNF() ?></td>
-                                            <td><?= $object->getNf() ?></td>
-                                            <td><?= $object->getValorNF() ?></td>
-                                            <td><?= $object->getDataEntrega() ?></td>
-                                            <td><?= $object->getDataRemessaTesouraria() ?></td>
-                                            <td><input type="hidden" name="dataLiquidacao" value="<?= $object->getDataLiquidacao() ?>"><?= $object->getDataLiquidacao() ?></td>                               
-                                            <td>
-                                                <?php if (isAdminLevel($EDITAR_FISCALIZACAO)) { ?>
-                                                    <a href="../Controller/FiscalizacaoController.php?action=update_nf&id=<?= $object->getId() ?>"><img src='../include/imagens/editar.png' width='25' height='25' title='Editar'></a>
-                                                <?php } ?>
-                                                <?php if (isAdminLevel($EXCLUIR_FISCALIZACAO)) { ?>
-                                                    <a href="../Controller/FiscalizacaoController.php?action=delete_nf&id=<?= $object->getId() ?>"><img src='../include/imagens/excluir.png' width='25' height='25' title='Excluir'></a>
-                                                <?php } ?>
-                                            </td>               
-                                        </tr>
-                                        <?php
-                                    }
-                                }
-                                ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                </div>  
+                <?= $button ?>
             </div>
+            <a name="notasFiscais">&nbsp;</a>                
+            <div class="conteudo" style="border: 1px dashed lightskyblue; padding: 7px;">
+                <h2 class="alert alert-info">
+                    <img src="../include/imagens/minimizar.png" width="25" height="25" onclick="minimize('tesouraria');"> 
+                    <img src="../include/imagens/maximizar.png" width="25" height="25" onclick="maximize('tesouraria');"> 
+                    ALMOXARIFADO / TESOURARIA
+                </h2>
+                <div id="tesouraria"> 
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div class="col">                    
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Observação</span>
+                                    <textarea class="form-control" id="observacaoAlmox" name="observacaoAlmox" maxlength="520" <?= !$readonly ? "" : "disabled" ?>><?= $object->getObservacaoAlmox(); ?></textarea>
+                                </div>                    
+                            </div>
+                            <div class="col">
+                                <span class="explanation">Observações relativas ao Almoxarifado e/ou Tesouraria.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-bordered" id="notasCredito">
+                        <thead>                            
+                            <tr>
+                                <th>Tipo NF</th>   
+                                <th>NF</th>
+                                <th>Valor NF</th>
+                                <th>Data Entrega</th>
+                                <th>Data Remessa Tesouraria</th>                             
+                                <th>Data Liquidação</th>                                
+                                <th>
+                                    <?php if (isAdminLevel($ADICIONAR_FISCALIZACAO)) { ?>
+                                        <a href="../Controller/FiscalizacaoController.php?action=insert_nf&idRequisicao=<?= $object->getId(); ?>"><img src='../include/imagens/adicionar.png' width='25' height='25' title='Adicionar'></a>
+                                    <?php } ?>
+                                </th>                
+                            </tr>
+                        </thead>        
+                        <tbody>
+                            <?php
+                            if (isset($notaFiscalList) && is_array($notaFiscalList) && isAdminLevel($LISTAR_FISCALIZACAO)) {
+                                foreach ($notaFiscalList as $object) {
+                                    ?> 
+                                    <tr>
+                                        <td><?= $object->getTipoNF() ?></td>
+                                        <td><?= $object->getNf() ?></td>
+                                        <td>R$ <?= $object->getValorNF() ?></td>
+                                        <td><?= dateFormat($object->getDataEntrega()) ?></td>
+                                        <td><?= dateFormat($object->getDataRemessaTesouraria()) ?></td>
+                                        <td><input type="hidden" name="dataLiquidacao" value="<?= $object->getDataLiquidacao() ?>"><?= $object->getDataLiquidacao() ?></td>                               
+                                        <td>
+                                            <?php if (isAdminLevel($EDITAR_FISCALIZACAO)) { ?>
+                                                <a href="../Controller/FiscalizacaoController.php?action=update_nf&id=<?= $object->getId() ?>"><img src='../include/imagens/editar.png' width='25' height='25' title='Editar'></a>
+                                            <?php } ?>
+                                            <?php if (isAdminLevel($EXCLUIR_FISCALIZACAO)) { ?>
+                                                <a href="../Controller/FiscalizacaoController.php?action=delete_nf&id=<?= $object->getId() ?>"><img src='../include/imagens/excluir.png' width='25' height='25' title='Excluir'></a>
+                                            <?php } ?>
+                                        </td>               
+                                    </tr>
+                                    <?php
+                                }
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>            
         </div>
-        <br>        
+        <br>             
         <div class="form-group" align="center">
             <input type="submit" class="btn btn-success" value="Salvar"/>
             <input type="button" class="btn btn-danger" value="Fechar" onclick="document.location = 'FiscalizacaoController.php?action=getAllList';"/>
@@ -1126,78 +1208,78 @@ require_once '../include/header.php';
         }
     }
 
-    function setTimelineStatus(cell, status) {
-        var cellNameStatus = cell + "Status";
-        document.getElementById(cellNameStatus).innerHTML = "<h4>" + status + "</h4>";
-    }
+    //    function setTimelineStatus(cell, status) {
+    //        var cellNameStatus = cell + "Status";
+    //        document.getElementById(cellNameStatus).innerHTML = "<h4>" + status + "</h4>";
+    //    }
 
-    function completeTimeline(cell) {
-        var timeline = ["requisitante", "salc1", "conformidade", "salc2", "almoxarifado", "tesouraria"];
-        var cellNameTimestamp, cellNameStatus, timestamp, status;
-        cellNameTimestamp = cell + "Timestamp";
-        cellNameStatus = cell + "Status";
-        timestamp = document.getElementById(cellNameTimestamp);
-        status = document.getElementById(cellNameStatus);
-        timestamp.className = "timestampCompleted";
-        status.className = "statusCompleted";
-        cellIndex = timeline.indexOf(cell);
-        if (cellIndex < timeline.length - 1) {
-            cell = timeline[++cellIndex];
-            cellNameTimestamp = cell + "Timestamp";
-            cellNameStatus = cell + "Status";
-            timestamp = document.getElementById(cellNameTimestamp);
-            status = document.getElementById(cellNameStatus);
-            timestamp.className = "timestampNext";
-            status.className = "statusNext";
-            setTimelineStatus(cell, "Aguardando...");
-        }
-    }
+    //    function completeTimeline(cell) {
+    //        var timeline = ["requisitante", "salc1", "conformidade", "salc2", "almoxarifado", "tesouraria"];
+    //        var cellNameTimestamp, cellNameStatus, timestamp, status;
+    //        cellNameTimestamp = cell + "Timestamp";
+    //        cellNameStatus = cell + "Status";
+    //        timestamp = document.getElementById(cellNameTimestamp);
+    //        status = document.getElementById(cellNameStatus);
+    //        timestamp.className = "timestampCompleted";
+    //        status.className = "statusCompleted";
+    //        cellIndex = timeline.indexOf(cell);
+    //        if (cellIndex < timeline.length - 1) {
+    //            cell = timeline[++cellIndex];
+    //            cellNameTimestamp = cell + "Timestamp";
+    //            cellNameStatus = cell + "Status";
+    //            timestamp = document.getElementById(cellNameTimestamp);
+    //            status = document.getElementById(cellNameStatus);
+    //            timestamp.className = "timestampNext";
+    //            status.className = "statusNext";
+    //            setTimelineStatus(cell, "Aguardando...");
+    //        }
+    //    }
 
-    function checkIfReady(fields) {
-        var ready = true;
-        for (i = 0; i < fields.length; i++) {
-            var needle = document.forms["requisicao"][fields[i]].value;
-            if (needle === "") {
-                ready = false;
-            }
-        }
-        return ready;
-    }
+    //    function checkIfReady(fields) {
+    //        var ready = true;
+    //        for (i = 0; i < fields.length; i++) {
+    //            var needle = document.forms["requisicao"][fields[i]].value;
+    //            if (needle === "") {
+    //                ready = false;
+    //            }
+    //        }
+    //        return ready;
+    //    }
 
-    function fillTimeline() {
-        var requisitanteFields = ["dataRequisicao", "om", "idSecao", "idNotaCredito", "idCategoria", "modalidade", "ug", "omModalidade", "empresa", "cnpj", "contato"];
-        var salc1Fields = ["dataNE", "ne", "tipoNE", "valorNE"];
-        var conformidadeFields = ["dataParecer", "parecer"];
-        var salc2Fields = ["dataEnvioNE"];
-        var almoxarifadoFields = ["dataEnvioNEEmpresa"];
-        var tesourariaFields = ["dataLiquidacao"];
-        if (checkIfReady(requisitanteFields)) {
-            completeTimeline("requisitante");
-            setTimelineStatus("requisitante", "Requisição feita");
-        }
-        if (checkIfReady(salc1Fields)) {
-            completeTimeline("salc1");
-            setTimelineStatus("salc1", "Empenhado");
-        }
-        if (checkIfReady(conformidadeFields)) {
-            completeTimeline("conformidade");
-            setTimelineStatus("conformidade", "Conformidade OK");
-        }
-        if (checkIfReady(salc2Fields)) {
-            completeTimeline("salc2");
-            setTimelineStatus("salc2", "Enviado ao Almoxarifado");
-        }
-        if (checkIfReady(almoxarifadoFields)) {
-            completeTimeline("almoxarifado");
-            setTimelineStatus("almoxarifado", "Enviado à Empresa");
-        }
-        if (checkIfReady(tesourariaFields)) {
-            completeTimeline("tesouraria");
-            setTimelineStatus("tesouraria", "NFs Liquidadas");
-        }
-    }
+    //    function fillTimeline() {
+    //        var requisitanteFields = ["dataRequisicao", "om", "idSecao", "idNotaCredito", "idCategoria", "modalidade", "ug", "omModalidade", "empresa", "cnpj", "contato"];
+    //        var salc1Fields = ["dataNE", "ne", "tipoNE", "valorNE"];
+    //        var conformidadeFields = ["dataParecer", "parecer"];
+    //        var salc2Fields = ["dataEnvioNE"];
+    //        var almoxarifadoFields = ["dataEnvioNEEmpresa"];
+    //        var tesourariaFields = ["dataLiquidacao"];
+    //        if (checkIfReady(requisitanteFields)) {
+    //            completeTimeline("requisitante");
+    //            setTimelineStatus("requisitante", "Requisição feita");
+    //        }
+    //        if (checkIfReady(salc1Fields)) {
+    //            completeTimeline("salc1");
+    //            setTimelineStatus("salc1", "Empenhado");
+    //        }
+    //        if (checkIfReady(conformidadeFields)) {
+    //            completeTimeline("conformidade");
+    //            setTimelineStatus("conformidade", "Conformidade OK");
+    //        }
+    //        if (checkIfReady(salc2Fields)) {
+    //            completeTimeline("salc2");
+    //            setTimelineStatus("salc2", "Enviado ao Almoxarifado");
+    //        }
+    //        if (checkIfReady(almoxarifadoFields) /*&& NFSemEntrega === false*/) {
+    //            completeTimeline("almoxarifado");
+    //            setTimelineStatus("almoxarifado", "Enviado à Empresa");
+    //        }
+    //        if (checkIfReady(tesourariaFields)) {
+    //            completeTimeline("tesouraria");
+    //            setTimelineStatus("tesouraria", "NFs Liquidadas");
+    //        }
+    //    }
 
-    fillTimeline();
+    //fillTimeline();
 
     function checkPA(abriuPA) {
         var diex = document.getElementById("diexField");
@@ -1251,6 +1333,21 @@ require_once '../include/header.php';
             idNotaCredito.style.display = "none";
         }
     }
+
+    function checkDataPrazoEntrega(dataEnvioNEEmpresa) {
+        var date = new Date(dataEnvioNEEmpresa);
+        date.setDate(date.getDate() + 30);
+        document.getElementById("dataPrazoEntrega").value = date.toISOString().slice(0, 10);
+    }
+
+    function checkZeroFillFields(field) {
+        if (field.value === "0") {
+            field.value = "";
+        }
+    }
+
+    checkZeroFillFields(document.getElementById("ug"));
+    checkZeroFillFields(document.getElementById("numeroModalidade"));
 </script>
 <?php
 require_once '../include/footer.php';

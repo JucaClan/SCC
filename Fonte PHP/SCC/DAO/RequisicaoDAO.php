@@ -9,7 +9,7 @@ class RequisicaoDAO {
         try {
             $c = connect();
             $sql = "START TRANSACTION;"
-                    . "INSERT INTO `scc`.`Requisicao` (`dataRequisicao`, `om`, `Secao_idSecao`, `NotaCredito_idNotaCredito`, `Categoria_idCategoria`, `modalidade`, `numeroModalidade`, `ug`, `omModalidade`, `empresa`, `cnpj`, `contato`, `dataNE`, `tipoNE`, `ne`, `valorNE`, `observacaoSALC`, `dataEnvioNE`, `valorAnulado`, `justificativaAnulado`, `valorReforcado`, `observacaoReforco`, `NotaCredito_idNotaCreditoReforco`, `dataParecer`, `parecer`, `observacaoConformidade`, `dataAssinatura`, `dataEnvioNEEmpresa`, `dataPrazoEntrega`, `dataOficio`, `diex`, `dataDiex`, `Processo_idProcesso`, `observacaoAlmox`) "
+                    . "INSERT INTO `scc`.`Requisicao` (`dataRequisicao`, `om`, `Secao_idSecao`, `NotaCredito_idNotaCredito`, `Categoria_idCategoria`, `modalidade`, `numeroModalidade`, `ug`, `omModalidade`, `empresa`, `cnpj`, `contato`, `dataNE`, `tipoNE`, `ne`, `valorNE`, `observacaoSALC`, `dataEnvioNE`, `valorAnulado`, `justificativaAnulado`, `valorReforcado`, `observacaoReforco`, `NotaCredito_idNotaCreditoReforco`, `dataParecer`, `parecer`, `observacaoConformidade`, `dataAssinatura`, `dataEnvioNEEmpresa`, `dataPrazoEntrega`, `dataOficio`, `diex`, `dataDiex`, `Processo_idProcesso`, `observacaoAlmox`, `dataProtocoloSalc1`, `dataProtocoloConformidade`, `dataProtocoloSalc2`, `dataProtocoloAlmox`) "
                     . " VALUES("
                     . (!empty($object->getDataRequisicao()) ? "'" . $object->getDataRequisicao() . "' " : "NULL ")
                     . ", '" . $object->getOm() . "'"
@@ -45,6 +45,10 @@ class RequisicaoDAO {
                     . ", " . (!empty($object->getDataDiex()) ? "'" . $object->getDataDiex() . "' " : "NULL ")
                     . ", " . (!empty($object->getIdProcesso()) ? $object->getIdProcesso() : "NULL ")
                     . ", '" . $object->getObservacaoAlmox() . "'"
+                    . ", " . (!empty($object->getDataProtocoloSalc1()) ? "'" . $object->getDataProtocoloSalc1() . "' " : "NULL ")
+                    . ", " . (!empty($object->getDataProtocoloConformidade()) ? "'" . $object->getDataProtocoloConformidade() . "' " : "NULL ")
+                    . ", " . (!empty($object->getDataProtocoloSalc2()) ? "'" . $object->getDataProtocoloSalc2() . "' " : "NULL ")
+                    . ", " . (!empty($object->getDataProtocoloAlmox()) ? "'" . $object->getDataProtocoloAlmox() . "' " : "NULL ")
                     . ");SET @idRequisicao = LAST_INSERT_ID();";
             $itemList = $object->getItemList();
             if (!is_null($itemList)) {
@@ -110,6 +114,10 @@ class RequisicaoDAO {
                     . ", dataDiex = " . (!empty($object->getDataDiex()) ? "'" . $object->getDataDiex() . "' " : "NULL ")
                     . ", Processo_idProcesso = " . (!empty($object->getIdProcesso()) ? $object->getIdProcesso() . " " : "NULL ") . " "
                     . ", observacaoAlmox = '" . $object->getObservacaoAlmox() . "' "
+                    . ", dataProtocoloSalc1 = " . (!empty($object->getDataProtocoloSalc1()) ? "'" . $object->getDataProtocoloSalc1() . "' " : "NULL ")
+                    . ", dataProtocoloConformidade = " . (!empty($object->getDataProtocoloConformidade()) ? "'" . $object->getDataProtocoloConformidade() . "' " : "NULL ")
+                    . ", dataProtocoloSalc2 = " . (!empty($object->getDataProtocoloSalc2()) ? "'" . $object->getDataProtocoloSalc2() . "' " : "NULL ")
+                    . ", dataProtocoloAlmox = " . (!empty($object->getDataProtocoloAlmox()) ? "'" . $object->getDataProtocoloAlmox() . "' " : "NULL ")
                     . " WHERE idRequisicao = " . $object->getId() . ";";
             $itemList = $object->getItemList();
             if (!is_null($itemList)) {
@@ -155,15 +163,15 @@ class RequisicaoDAO {
                     . ", REPLACE(valorNE, '.', ',') AS valorNE "
                     . ", REPLACE(valorAnulado, '.', ',') AS valorAnulado "
                     . ", REPLACE(valorReforcado, '.', ',') AS valorReforcado "
-                    . ", DATE_FORMAT(dataRequisicao, '%d/%m/%Y') as dataRequisicaoFormatada "
-                    . ", DATE_FORMAT(dataNE, '%d/%m/%Y') as dataNEFormatada "
-                    . ", DATE_FORMAT(dataEnvioNE, '%d/%m/%Y') as dataEnvioNEFormatada "
                     . " FROM Requisicao "
                     . " WHERE idRequisicao = $id";
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
                 $objectArray = $this->fillArray($row);
                 $instance = new Requisicao($objectArray);
+                $instance->setHasNFsParaEntrega($this->checkNFSemEntrega($id));
+                $instance->setHasNFsParaLiquidar($this->checkNFSemLiquidar($id));
+                $instance->setHasNFsParaRemessa($this->checkNFSemRemessa($id));
             }
             $c->close();
             return isset($instance) ? $instance : null;
@@ -176,9 +184,6 @@ class RequisicaoDAO {
         try {
             $c = connect();
             $sql = "SELECT * "
-                    . ", DATE_FORMAT(dataRequisicao, '%d/%m/%Y') as dataRequisicaoFormatada "
-                    . ", DATE_FORMAT(dataNE, '%d/%m/%Y') as dataNEFormatada "
-                    . ", DATE_FORMAT(dataEnvioNE, '%d/%m/%Y') as dataEnvioNEFormatada "
                     . " FROM Requisicao "
                     . " INNER JOIN NotaCredito ON NotaCredito_idNotaCredito = idNotaCredito "
                     . " LEFT JOIN NotaFiscal ON Requisicao_idRequisicao = idRequisicao ";
@@ -188,54 +193,123 @@ class RequisicaoDAO {
                     !empty($filtro["ug"]) ||
                     !empty($filtro["ne"]) ||
                     $filtro["materiaisEntregues"] === 1 ||
-                    $filtro["materiaisEntregues"] === 0
+                    $filtro["materiaisEntregues"] === 0 ||
+                    $filtro["ano"] > 0
             ) {
-                $sql .= " WHERE "
-                        . "dataNE >= '' AND dataNE <= '' ";
+                $sql .= " WHERE ";
+                if ($filtro["ano"] > 0) {
+                    $sql .= " dataNE >= '" . $filtro["ano"] . "-01-01' AND dataNE <= '" . $filtro["ano"] . "-12-31' ";
+                }
                 if ($filtro["idSecao"] > 0) {
-                    $sql .= " AND ";
+                    if ($filtro["ano"] > 0) {
+                        $sql .= " AND ";
+                    }
                     $sql .= " Secao_idSecao = " . $filtro["idSecao"];
                 }
                 if ($filtro["idNotaCredito"] > 0) {
-                    if ($filtro["idSecao"] > 0) {
+                    if ($filtro["ano"] > 0 || $filtro["idSecao"] > 0) {
                         $sql .= " AND ";
                     }
                     $sql .= " NotaCredito_idNotaCredito = " . $filtro["idNotaCredito"];
                 }
                 if (!empty($filtro["ug"])) {
-                    if ($filtro["idSecao"] > 0 || $filtro["idNotaCredito"] > 0) {
+                    if ($filtro["ano"] > 0 || $filtro["idSecao"] > 0 || $filtro["idNotaCredito"] > 0) {
                         $sql .= " AND ";
                     }
                     $sql .= " NotaCredito.ug = '" . $filtro["ug"] . "'";
                 }
                 if (!empty($filtro["ne"])) {
-                    if ($filtro["idSecao"] > 0 || $filtro["idNotaCredito"] > 0 || !empty($filtro["ug"])) {
+                    if ($filtro["ano"] > 0 || $filtro["idSecao"] > 0 || $filtro["idNotaCredito"] > 0 || !empty($filtro["ug"])) {
                         $sql .= " AND ";
                     }
                     $sql .= " ne = '" . $filtro["ne"] . "'";
                 }
                 if ($filtro["materiaisEntregues"] === 1) {
-                    if ($filtro["idSecao"] > 0 || $filtro["idNotaCredito"] > 0 || !empty($filtro["ug"]) || !empty($filtro["ne"])) {
+                    if ($filtro["ano"] > 0 || $filtro["idSecao"] > 0 || $filtro["idNotaCredito"] > 0 || !empty($filtro["ug"]) || !empty($filtro["ne"])) {
                         $sql .= " AND ";
                     }
                     $sql .= " (dataEntrega != '' AND dataEntrega IS NOT NULL) ";
                 }
                 if ($filtro["materiaisEntregues"] === 0) {
-                    if ($filtro["idSecao"] > 0 || $filtro["idNotaCredito"] > 0 || !empty($filtro["ug"]) || !empty($filtro["ne"])) {
+                    if ($filtro["ano"] > 0 || $filtro["idSecao"] > 0 || $filtro["idNotaCredito"] > 0 || !empty($filtro["ug"]) || !empty($filtro["ne"])) {
                         $sql .= " AND ";
                     }
                     $sql .= " (dataEntrega = '' OR dataEntrega IS NULL) ";
                 }
             }
             $sql .= " GROUP BY idRequisicao"
-                    . " ORDER BY dataRequisicao";
+                    . " ORDER BY dataNE, dataRequisicao";
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
                 $objectArray = $this->fillArray($row);
-                $lista[] = new Requisicao($objectArray);
+                $object = new Requisicao($objectArray);
+                $object->setHasNFsParaEntrega($this->checkNFSemEntrega($object->getId()));
+                $object->setHasNFsParaLiquidar($this->checkNFSemLiquidar($object->getId()));
+                $object->setHasNFsParaRemessa($this->checkNFSemRemessa($object->getId()));
+                $lista[] = $object;
             }
             $c->close();
             return isset($lista) ? $lista : null;
+        } catch (Exception $e) {
+            throw($e);
+        }
+    }
+
+    function checkNFSemEntrega($id) {
+        try {
+            $c = connect();
+            $sql = "SELECT * "
+                    . " FROM Requisicao "
+                    . " LEFT JOIN NotaFiscal ON Requisicao_idRequisicao = idRequisicao "
+                    . " WHERE idRequisicao = $id AND (dataEntrega = '' OR dataEntrega IS NULL) "
+                    . " GROUP BY idRequisicao ";
+            $result = $c->query($sql);
+            while ($row = $result->fetch_assoc()) {
+                $objectArray = $this->fillArray($row);
+                $instance = new Requisicao($objectArray);
+            }
+            $c->close();
+            return isset($instance) ? true : false;
+        } catch (Exception $e) {
+            throw($e);
+        }
+    }
+
+    function checkNFSemLiquidar($id) {
+        try {
+            $c = connect();
+            $sql = "SELECT * "
+                    . " FROM Requisicao "
+                    . " LEFT JOIN NotaFiscal ON Requisicao_idRequisicao = idRequisicao "
+                    . " WHERE idRequisicao = $id AND (dataLiquidacao = '' OR dataLiquidacao IS NULL) "
+                    . " GROUP BY idRequisicao ";
+            $result = $c->query($sql);
+            while ($row = $result->fetch_assoc()) {
+                $objectArray = $this->fillArray($row);
+                $instance = new Requisicao($objectArray);
+            }
+            $c->close();
+            return isset($instance) ? true : false;
+        } catch (Exception $e) {
+            throw($e);
+        }
+    }
+
+    function checkNFSemRemessa($id) {
+        try {
+            $c = connect();
+            $sql = "SELECT * "
+                    . " FROM Requisicao "
+                    . " LEFT JOIN NotaFiscal ON Requisicao_idRequisicao = idRequisicao "
+                    . " WHERE idRequisicao = $id AND (dataRemessaTesouraria = '' OR dataRemessaTesouraria IS NULL) "
+                    . " GROUP BY idRequisicao ";
+            $result = $c->query($sql);
+            while ($row = $result->fetch_assoc()) {
+                $objectArray = $this->fillArray($row);
+                $instance = new Requisicao($objectArray);
+            }
+            $c->close();
+            return isset($instance) ? true : false;
         } catch (Exception $e) {
             throw($e);
         }
@@ -278,10 +352,11 @@ class RequisicaoDAO {
             "dataOficio" => $row["dataOficio"],
             "observacaoAlmox" => $row["observacaoAlmox"],
             "idProcesso" => $row["Processo_idProcesso"],
-            "itemList" => "",
-            "dataRequisicaoFormatada" => $row["dataRequisicaoFormatada"],
-            "dataEnvioNEFormatada" => $row["dataEnvioNEFormatada"],
-            "dataNEFormatada" => $row["dataNEFormatada"]
+            "dataProtocoloSalc1" => $row["dataProtocoloSalc1"],
+            "dataProtocoloConformidade" => $row["dataProtocoloConformidade"],
+            "dataProtocoloSalc2" => $row["dataProtocoloSalc2"],
+            "dataProtocoloAlmox" => $row["dataProtocoloAlmox"],
+            "itemList" => ""
         );
     }
 

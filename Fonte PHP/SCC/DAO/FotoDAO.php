@@ -93,6 +93,16 @@ class FotoDAO {
                 } else {
                     return false;
                 }
+            } else {
+                $foto = "../include/fotos/$id.png";
+                if (file_exists($foto)) {
+                    $delete = unlink($foto);
+                    if ($delete) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
             }
             return true;
         } catch (Exception $e) {

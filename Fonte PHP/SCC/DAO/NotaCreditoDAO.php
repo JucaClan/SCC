@@ -46,7 +46,8 @@ class NotaCreditoDAO {
                     . ", '" . $object->getFonte() . "' "
                     . ", '" . $object->getUg() . "' "
                     . ");";
-            $stmt = $c->prepare($sql);               
+            $stmt = $c->prepare($sql);
+            //echo $sql;exit();
             $sqlOk = $stmt ? $stmt->execute() : false;
             $c->close();
             return $sqlOk;
@@ -80,7 +81,7 @@ class NotaCreditoDAO {
 
     public function delete($object) {
         try {
-            $c = connect();            
+            $c = connect();
             $sql = "DELETE FROM NotaCredito "
                     . " WHERE idNotaCredito = " . $object->getId() . ";";
             $stmt = $c->prepare($sql);
@@ -93,18 +94,44 @@ class NotaCreditoDAO {
     }
 
     public function getAllList($filtro = "") {
-        try {
+        try {            
             $c = connect();
-            $sql = "SELECT * "
+//            $sql = "SELECT * "
+//                    . ", REPLACE(valor, '.', ',') AS valor "
+//                    . ", REPLACE(valorRecolhido, '.', ',') AS valorRecolhido "
+//                    . ", DATE_FORMAT(dataNc, '%d/%m/%Y') as dataNc "
+//                    . " FROM NotaCredito ";
+            $sql = "SELECT *, SUM(valorNE) AS totalEmpenhado "
                     . ", REPLACE(valor, '.', ',') AS valor "
                     . ", REPLACE(valorRecolhido, '.', ',') AS valorRecolhido "
-                    . ", DATE_FORMAT(dataNc, '%d/%m/%Y') as dataNc "
+                    //. ", DATE_FORMAT(dataNc, '%d/%m/%Y') as dataNc "
                     . " FROM NotaCredito "
-                    . " ORDER BY dataNc";
+                    . " LEFT JOIN Requisicao ON idNotaCredito = NotaCredito_idNotaCredito ";            
+            if (
+                    $filtro["idNotaCredito"] > 0 ||
+                    $filtro["ano"] > 0
+            ) {
+                $sql .= " WHERE ";
+                if ($filtro["ano"] > 0) {
+                    $sql .= " dataNc >= '" . $filtro["ano"] . "-01-01' AND dataNc <= '" . $filtro["ano"] . "-12-31' ";
+                }
+                if ($filtro["idNotaCredito"] > 0) {
+                    if ($filtro["ano"] > 0) {
+                        $sql .= " AND ";
+                    }
+                    $sql .= " idNotaCredito = " . $filtro["idNotaCredito"];
+                }
+            }
+            $sql .= " GROUP BY idNotaCredito ";
+            $sql .= ($filtro["notaCreditoAtivas"] === 0 || $filtro["notaCreditoAtivas"] === 1) ? 
+                    " HAVING SUM(valorNE) " . ($filtro["notaCreditoAtivas"] === 0 ? ">=" : "<") . " NotaCredito.valor " . (($filtro["notaCreditoAtivas"] === 1) ? " || SUM(valorNE) IS NULL " : "") : "";
+            $sql .= " ORDER BY dataNc";            
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
                 $objectArray = $this->fillArray($row);
-                $lista[] = new NotaCredito($objectArray);
+                $object = new NotaCredito($objectArray);
+                $object->setTotalEmpenhado($row["totalEmpenhado"]);
+                $lista[] = $object;
             }
             $c->close();
             return isset($lista) ? $lista : null;
@@ -116,7 +143,7 @@ class NotaCreditoDAO {
     public function getById($id) {
         try {
             $c = connect();
-            $sql = "SELECT * "                    
+            $sql = "SELECT * "
                     . ", REPLACE(valor, '.', ',') AS valor "
                     . " FROM NotaCredito "
                     . " WHERE idNotaCredito = $id";
@@ -130,7 +157,7 @@ class NotaCreditoDAO {
         } catch (Exception $e) {
             throw($e);
         }
-    }    
+    }
 
     public function fillArray($row) {
         return array(

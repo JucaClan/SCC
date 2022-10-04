@@ -107,16 +107,16 @@ class ProcessoDAO {
                 if (!empty($filtro["tipo"])) {
                     $sqlFiltro .= $filtro["solucao"] != "todos" ? " AND " : "";
                     $sqlFiltro .= " tipo = '" . $filtro["tipo"] . "'";
-                }                
+                }
             }
-            $sql = "SELECT *, "
-                    . "DATE_FORMAT(dataInicio, '%d/%m/%Y') as dataInicio, DATE_FORMAT(dataInicio, '%Y/%m/%d') as dataInicioOriginal, "
-                    . "DATE_FORMAT(dataFim, '%d/%m/%Y') as dataFim, DATE_FORMAT(dataFim, '%Y/%m/%d') as dataFimOriginal, "
-                    . "DATE_FORMAT(prorrogacaoPrazo, '%d/%m/%Y') as prorrogacaoPrazo, DATE_FORMAT(prorrogacaoPrazo, '%Y/%m/%d') as prorrogacaoPrazoOriginal, "
-                    . "DATE_FORMAT(dataPrazo, '%d/%m/%Y') as dataPrazo, DATE_FORMAT(dataPrazo, '%Y/%m/%d') as dataPrazoOriginal "
+            $sql = "SELECT * "
+                    . ", DATE_FORMAT(dataInicio, '%d/%m/%Y') as dataInicio, DATE_FORMAT(dataInicio, '%Y/%m/%d') as dataInicioOriginal "
+                    . ", DATE_FORMAT(dataFim, '%d/%m/%Y') as dataFim, DATE_FORMAT(dataFim, '%Y/%m/%d') as dataFimOriginal "
+                    . ", DATE_FORMAT(prorrogacaoPrazo, '%d/%m/%Y') as prorrogacaoPrazo, DATE_FORMAT(prorrogacaoPrazo, '%Y/%m/%d') as prorrogacaoPrazoOriginal "
+                    . ", DATE_FORMAT(dataPrazo, '%d/%m/%Y') as dataPrazo, DATE_FORMAT(dataPrazo, '%Y/%m/%d') as dataPrazoOriginal "
                     . " FROM Processo "
                     . $sqlFiltro
-                    . " ORDER BY dataInicio DESC ";            
+                    . " ORDER BY dataInicio DESC ";
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
                 $objectArray = $this->fillArray($row);
@@ -133,6 +133,10 @@ class ProcessoDAO {
         try {
             $c = connect();
             $sql = "SELECT * "
+                    . ", DATE_FORMAT(dataInicio, '%d/%m/%Y') as dataInicioFormatada, DATE_FORMAT(dataInicio, '%Y/%m/%d') as dataInicioOriginal "
+                    . ", DATE_FORMAT(dataFim, '%d/%m/%Y') as dataFimFormatada, DATE_FORMAT(dataFim, '%Y/%m/%d') as dataFimOriginal "
+                    . ", DATE_FORMAT(prorrogacaoPrazo, '%d/%m/%Y') as prorrogacaoPrazoFormatada, DATE_FORMAT(prorrogacaoPrazo, '%Y/%m/%d') as prorrogacaoPrazoOriginal "
+                    . ", DATE_FORMAT(dataPrazo, '%d/%m/%Y') as dataPrazoFormatada, DATE_FORMAT(dataPrazo, '%Y/%m/%d') as dataPrazoOriginal "
                     . " FROM Processo "
                     . " WHERE idProcesso = $id";
             $result = $c->query($sql);

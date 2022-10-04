@@ -27,10 +27,16 @@
  * @author gustavodauer
  */
 require_once '../include/header.php';
+$action = filter_input(INPUT_GET, "action", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES);
+if ($action === "processo_update" || $action === "processo_insert") {
+    $button = '<button type="submit" class="btn btn-primary">Salvar</button>';
+} else {
+    $button = "<button type='button' class='btn btn-primary' onclick='document.location = history.back();'>Voltar</button>";
+}
 ?>
 <div class="container">     
     <form accept-charset="UTF-8" action="../Controller/S1Controller.php?action=processo_<?= $object->getId() > 0 ? "update" : "insert" ?>&id=<?= $object->getId() ?>" class="needs-validation" novalidate method="post">
-        <h2><?= $object->getId() > 0 ? "Editar" : "Inserir" ?> Processo | <a href="#" onclick="history.back(-1);">Voltar</a> | <button type="submit" class="btn btn-primary">Salvar</button></h2>    
+        <h2><?= $object->getId() > 0 ? "Editar" : "Inserir" ?> Processo | <a href="#" onclick="history.back(-1);">Voltar</a> | <?= $button ?></h2>    
         <hr>    
         <input type="hidden" name="lastURL" value="<?= $_SERVER["HTTP_REFERER"] ?>">        
         <div class="form-group">
@@ -146,7 +152,7 @@ require_once '../include/header.php';
             </div>
         </div>
         <hr>
-        <button type="submit" class="btn btn-primary">Salvar</button>
+        <?= $button; ?>        
     </form>
 </div>
 <script>

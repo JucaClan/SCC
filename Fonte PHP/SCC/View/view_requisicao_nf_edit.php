@@ -294,7 +294,7 @@ require_once '../include/header.php';
                                 </tr>                                   
                                 <?php
                                 if (!empty($notaFiscalItemList) && $notaFiscalItemList != null) {
-                                    $i = 0;                                    
+                                    $i = 0;
                                     $totalItens = 0;
                                     foreach ($notaFiscalItemList as $item) {
                                         $i++;
@@ -310,9 +310,9 @@ require_once '../include/header.php';
                                             <td>
                                                 <?= $item->getDescricao() ?>
                                             </td>
-                                            <td>
+                                            <td>R$ 
                                                 <?= $item->getValor() ?>
-                                                <input type="hidden" name="valorItem<?=$i?>" id="valorItem<?=$i?>" value="<?= $item->getValor() ?>">
+                                                <input type="hidden" name="valorItem<?= $i ?>" id="valorItem<?= $i ?>" value="<?= $item->getValor() ?>">
                                             </td>
                                             <td>
                                                 <?= $item->getQuantidade() ?>
@@ -382,41 +382,41 @@ require_once '../include/header.php';
                         <span class="explanation">Data de entrega do material ou serviço junto com a Nota Fiscal.</span>
                     </div>
                 </div>
-        </div>
-        <div class="form-group">
-            <div class="form-row">
-                <div  class="col">                     
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">Data Remessa à Tesouraria</span>
-                        <input type="date" class="form-control" id="dataRemessaTesouraria" name="dataRemessaTesouraria" value="<?= $object->getDataRemessaTesouraria() ?>"/>
-                    </div>                    
+            </div>
+            <div class="form-group">
+                <div class="form-row">
+                    <div  class="col">                     
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Data Remessa à Tesouraria</span>
+                            <input type="date" class="form-control" id="dataRemessaTesouraria" name="dataRemessaTesouraria" value="<?= $object->getDataRemessaTesouraria() ?>"/>
+                        </div>                    
+                    </div>
+                    <div class="col">
+                        <span class="explanation">Data Remessa à Tesouraria.</span>
+                    </div>
                 </div>
-                <div class="col">
-                    <span class="explanation">Data Remessa à Tesouraria.</span>
+            </div>
+            <!-- TESOURARIA -->
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="col">                    
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" >Data da liquidação da NF</span>
+                            <input type="date" class="form-control" id="dataLiquidacao" name="dataLiquidacao" value="<?= $object->getDataLiquidacao() ?>"/>
+                        </div>                    
+                    </div>
+                    <div class="col">
+                        <span class="explanation">Data da liquidação da Nota Fiscal.</span>
+                    </div>
                 </div>
             </div>
         </div>
-        <!-- TESOURARIA -->
-        <div class="form-group">
-            <div class="form-row">
-                <div class="col">                    
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" >Data da liquidação da NF</span>
-                        <input type="date" class="form-control" id="dataLiquidacao" name="dataLiquidacao" value="<?= $object->getDataLiquidacao() ?>"/>
-                    </div>                    
-                </div>
-                <div class="col">
-                    <span class="explanation">Data da liquidação da Nota Fiscal.</span>
-                </div>
-            </div>
+        <br>
+        <div class="form-group" align="center">
+            <input type="submit" class="btn btn-success" value="Salvar"/>
+            <input type="button" class="btn btn-danger" value="Fechar" onclick="history.back(-1);"/>
         </div>
-</div>
-<br>
-<div class="form-group" align="center">
-    <input type="submit" class="btn btn-success" value="Salvar"/>
-    <input type="button" class="btn btn-danger" value="Fechar" onclick="history.back(-1);"/>
-</div>
-</form>
+    </form>
 </div>
 <script>
 // Disable form submissions if there are invalid fields
@@ -471,16 +471,16 @@ require_once '../include/header.php';
     }
 
     function fillValorNF() {
-        var valorNF = document.getElementById("valorNF");            
-        totalValores = 0;        
-        for(i=1;i<=<?=$totalItens?>;i++) {            
-            var valorItem = document.getElementById("valorItem" + i).value;              
-            var quantidadeItem = document.getElementById("quantidadeItem" + i).value;                
+        var valorNF = document.getElementById("valorNF");
+        totalValores = 0;
+        for (i = 1; i <=<?= $totalItens ?>; i++) {
+            var valorItem = document.getElementById("valorItem" + i).value.replace(",", ".");
+            var quantidadeItem = document.getElementById("quantidadeItem" + i).value;
             totalValores += parseFloat(valorItem) * parseInt(quantidadeItem);
         }
-        valorNF.value = totalValores;
+        valorNF.value = (totalValores.toFixed(2)).toString().replace(".", ",");
     }
-    
+
     fillValorNF();
 </script>
 <?php

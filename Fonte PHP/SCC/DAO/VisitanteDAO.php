@@ -81,9 +81,9 @@ class VisitanteDAO {
                     . ", cracha = '" . $object->getCracha() . "' "
                     . ", foto = '" . $object->getId() . ".jpg' "
                     . ", temporario = " . (empty($object->getTemporario()) ? 0 : 1)
-                    . " WHERE idVisitante = " . $object->getId() . ";";
+                    . " WHERE idVisitante = " . $object->getId() . ";";            
             $stmt = $c->prepare($sql);
-            $sqlOk = $stmt ? $stmt->execute() : false;
+            $sqlOk = $stmt ? $stmt->execute() : false;            
             if ($sqlOk && !empty($object->getArquivoFoto()["name"])) {
                 $fotoDAO = new FotoDAO();
                 $sqlOk = $fotoDAO->uploadFoto($object->getArquivoFoto(), $object->getId());
@@ -162,8 +162,7 @@ class VisitanteDAO {
             "telefone" => $row["telefone"],
             "destino" => $row["destino"],
             "dataEntrada" => $row["dataEntrada"],
-            "dataSaida" => $row["dataSaida"],
-            "dataEntradaFormatada" => $row["dataEntradaFormatada"],
+            "dataSaida" => $row["dataSaida"],            
             "cracha" => $row["cracha"],
             "foto" => $row["foto"],
             "temporario" => $row["temporario"]
