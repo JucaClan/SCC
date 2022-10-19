@@ -227,7 +227,7 @@ function formatValue($value) {
             </li>
             <li>
                 <div class="timestamp<?= $almox[0] ?>" id="almoxarifadoTimestamp">
-                    ALMOX
+                    <?= $object->getResponsavel() === "Aprovisionamento" ? "APROV" : "ALMOX" ?>
                 </div>
                 <div class="status<?= $almox[0] ?>" id="almoxarifadoStatus">
                     <h4><?= $almox[0] === "Next" ? $almox[1] : $marcador; ?></h4>

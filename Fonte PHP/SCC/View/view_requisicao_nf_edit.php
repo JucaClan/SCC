@@ -32,13 +32,6 @@ require_once '../include/header.php';
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="../include/js/jquery-mask/jquery.mask.min.js"></script>
 <script type="text/javascript">
-    function excluir(id, idRequisicao) {
-        if (confirm('Tem certeza que deseja excluir esse item?\n\nAo prosseguir, os dados editados nesse formulário não serão salvos. A página irá recarregar com a exclusão do item, exibindo os últimos dados salvos ao clicar no botão Salvar.')) {
-            document.location = 'FiscalizacaoController.php?action=delete_item&idItem=' + id + "&id=" + idRequisicao;
-        }
-        return false;
-    }
-
     function getCookie(cname) {
         var name = cname + "=";
         var decodedCookie = decodeURIComponent(document.cookie);
@@ -54,138 +47,10 @@ require_once '../include/header.php';
         }
         return "";
     }
-
-    function minimize(id) {
-        var object = document.getElementById(id);
-        object.style.display = "none";
-        document.cookie = id + "=1";
-    }
-
-    function maximize(id) {
-        var object = document.getElementById(id);
-        object.style.display = "";
-        document.cookie = id + "=0";
-    }
-
-    function minimizeByDefault() {
-        minimize('requisitante');
-        minimize('salc');
-        minimize('conformidade');
-        minimize('almoxarifado');
-        minimize('tesouraria');
-    }
-
-    function maximizeByDefault() {
-        maximize('requisitante');
-        maximize('salc');
-        maximize('conformidade');
-        maximize('almoxarifado');
-        minimize('tesouraria');
-    }
 </script>
 <style type="text/css">
     .subtitulo {
         font-weight: bold;
-    }
-
-    .timeline {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        list-style-type: none;
-    }
-
-    .timestamp {
-        margin-bottom: 20px;
-        padding: 0px 40px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        font-weight: bold;
-        color: #ffcccc;
-        font-size: 14px;
-    }
-
-    .timestampCompleted {
-        margin-bottom: 20px;
-        padding: 0px 40px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        font-weight: bold;
-        color: #00cc00;
-        font-size: 14px;
-    }
-
-    .timestampNext {
-        margin-bottom: 20px;
-        padding: 0px 40px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        font-weight: bold;
-        color: red;
-        font-size: 14px;
-    }
-
-    .status {
-        padding: 0px 40px;
-        display: flex;
-        justify-content: center;
-        border-top: 2px solid;
-        border-right: 2px solid;
-        border-bottom: 2px solid;
-        border-radius: 70px;
-        border-color: #ffcccc;
-        height: 80px;
-        /*background-color: #ffcccc;*/
-    }
-
-    .statusCompleted {
-        padding: 0px 40px;
-        display: flex;
-        justify-content: center;
-        border: 2px solid;
-        /*        border-left: 2px solid; 
-                border-right: 2px solid; */
-        border-radius: 70px;
-        border-color: #00cc00;
-        height: 80px;
-        background-color: #ccffcc;
-    }
-
-    .statusNext {
-        padding: 0px 40px;
-        display: flex;
-        justify-content: center;
-        border-top: 2px solid;
-        border-right: 2px solid;
-        border-bottom: 2px solid;
-        border-radius: 70px;
-        border-color: red;
-        height: 80px;
-        /*background-color: #ffcccc;*/
-    }
-
-    .status h4 {
-        color: white;
-        font-weight: bold;
-        font-size: 12px;
-        margin-top: 7px;
-    }
-
-    .statusCompleted h4 {
-        color: #00cc00;
-        font-weight: bold;
-        font-size: 12px;
-        margin-top: 7px;
-    }
-
-    .statusNext h4 {
-        color: red;
-        font-weight: bold;
-        font-size: 12px;
-        margin-top: 7px;
     }
 
     .explanation {
@@ -194,43 +59,142 @@ require_once '../include/header.php';
     }
 </style>
 <div class="conteudo">  
+    <?php
+    $requisicaoDAO = new RequisicaoDAO();
+    $requisicao = $requisicaoDAO->getById($object->getIdRequisicao());
+    ?>
     <form accept-charset="UTF-8" action="../Controller/FiscalizacaoController.php?action=<?= $object->getId() > 0 ? 'update_nf' : 'insert_nf' ?>&idRequisicao=<?= $object->getIdRequisicao(); ?>&id=<?= $object->getId(); ?>" class="needs-validation" novalidate method="post" name="requisicao" id="requisicao">
-        <h2><?= $object->getId() > 0 ? "Editar" : "Cadastrar" ?> Nota Fiscal | <a href="#" onclick="history.back(-1);">Voltar</a> | <button type="submit" class="btn btn-success">Salvar</button></h2>    
+        <h2><?= $object->getId() > 0 ? "Editar" : "Cadastrar" ?> <?= $requisicao->getTipoNF() !== "ordinario" ? "Pedido/" : "" ?>Nota Fiscal | <a href="#" onclick="history.back(-1);">Voltar</a> | <button type="submit" class="btn btn-success">Salvar</button></h2>    
         <hr>           
         <?php
-        if (isAdminLevel($ALMOXARIFADO)) {
+        if (isAdminLevel($ALMOXARIFADO) || isAdminLevel($TESOURARIA)) {
             $readonly = false;
         }
         ?>
-        <div class="conteudo" style="border: 1px dashed lightskyblue; padding: 7px;">            
+        <div class="conteudo" style="border: 1px dashed lightskyblue; padding: 7px;">   
+            <?php
+            if ($requisicao->getTipoNE() !== "ordinario") {
+                ?>
+                <h2 class="alert alert-info">                
+                    PEDIDO
+                </h2>
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col">                    
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Data do pedido</span>
+                                <input type="date" class="form-control" id="dataPedido" name ="dataPedido" value="<?= $object->getDataPedido() ?>" / >
+                            </div>                    
+                        </div>
+                        <div class="col">
+                            <span class="explanation">Data da realização do pedido.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-row">                
+                        <div class="col">  
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Itens</span>                                                    
+                                <table border="0" cellpadding="7" cellspacing="0" style="border: 1px solid lightblue;" width="100%">
+                                    <tr>
+                                        <th width="5%">Nº</th>
+                                        <th width="35%">Descrição</th>
+                                        <th width="20%">Valor</th>
+                                        <th width="15%">Qtd Max</th>
+                                        <th width="15%">Qtd Usada</th>
+                                        <th width="20%">Qtd NF</th>
+                                    </tr>                                   
+                                    <?php
+                                    if (!empty($notaFiscalItemList) && $notaFiscalItemList != null) {
+                                        $i = 0;
+                                        $totalItens = 0;
+                                        foreach ($notaFiscalItemList as $item) {
+                                            $i++;
+                                            $notaFiscal_has_item = ($object->getId() > 0) ? $itemDAO->getQuantidadeByItemIdENFId($item->getId(), $object->getId()) : new Item();
+                                            $total = $itemDAO->getTotalQuantidade($item->getId());
+                                            $total = (is_null($total) || $total < 0) ? 0 : $total;
+                                            $totalItens++;
+                                            ?>                                           
+                                            <tr>
+                                                <td>
+                                                    <?= $item->getNumeroItem() ?>
+                                                </td>
+                                                <td>
+                                                    <?= $item->getDescricao() ?>
+                                                </td>
+                                                <td>R$ 
+                                                    <?= number_format((float)$item->getValor(), 2, ",", ".") ?>
+                                                    <input type="hidden" name="valorItem<?= $i ?>" id="valorItem<?= $i ?>" value="<?= $item->getValor() ?>">
+                                                </td>
+                                                <td>
+                                                    <?= $item->getQuantidade() ?>
+                                                </td>
+                                                <td>
+                                                    <?= $total ?>
+                                                </td>
+                                                <td>                                                    
+                                                    <input type="number" class="form-control" id="quantidadeItem<?= $i; ?>" name="quantidadeItem<?= $i; ?>" max="<?= $notaFiscal_has_item != null ? ($notaFiscal_has_item->getQuantidade() + $item->getQuantidade() - $total) : $item->getQuantidade() ?>" min="0" value="<?= ($notaFiscal_has_item != null && !empty($notaFiscal_has_item->getQuantidade())) ? $notaFiscal_has_item->getQuantidade() : 0; ?>" style="width: 95px;" <?= ($item->getQuantidade() - $total) === 0 ? "  " : "" ?> onchange="fillValorNF();"/>                                                    
+                                                    <input type="hidden" name="idItem<?= $i; ?>" value="<?= $item->getId(); ?>" />
+                                                    <?php
+                                                    if ($object != null) {
+                                                        ?>
+                                                        <input type="hidden" name="idNotaFiscal<?= $i; ?>" value="<?= $object->getId(); ?>" />
+                                                        <?php
+                                                    }
+                                                    ?>
+                                                </td>
+                                            </tr>
+                                            <?php
+                                        }
+                                    }
+                                    ?> 
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <span class="explanation">Itens respectivos à Nota Fiscal.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col">                    
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Valor R$</span>
+                                <input type="text" class="form-control" id="valorNF" name="valorNF" maxlength="25" value="<?= $object->getValorNF() ?>" onkeypress="return event.charCode === 44 || (event.charCode >= 48 && event.charCode <= 57);" />
+                            </div>                    
+                        </div>
+                        <div class="col">
+                            <span class="explanation">Valor da Nota Fiscal.</span>
+                        </div>                                                  
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col">                    
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Data prazo de entrega</span>
+                                <input type="date" class="form-control" id="dataPrazoEntrega" name ="dataPrazoEntrega" value="<?= $object->getDataPrazoEntrega() ?>" / >
+                            </div>                    
+                        </div>
+                        <div class="col">
+                            <span class="explanation">Data prazo para entrega do pedido.</span>
+                        </div>
+                    </div>
+                </div>
+                <?php
+            }
+            ?>
             <h2 class="alert alert-info">                
                 NOTA FISCAL
             </h2>            
-            <div class="form-group">
-                <div class="form-row">                
-                    <div class="col">                        
-                        <div class="form-check form-check-inline">    
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">Tipo NF</span>
-                            </div>
-                            &nbsp;&nbsp;<input type="radio" class="form-check-input" id="tipoNF" name="tipoNF" value="material" <?= $object->getTipoNF() == "material" ? "checked" : "" ?> <?= !$readonly ? "" : "disabled" ?> onclick="checkTipoNF(this.value);" required /> 
-                            <label class="form-check-label">Material</label> 
-                        </div>
-                        <div class="form-check form-check-inline"> 
-                            <input type="radio" class="form-check-input" id="tipoNF" name="tipoNF" value="servico" <?= $object->getTipoNF() == "servico" ? "checked" : "" ?> <?= !$readonly ? "" : "disabled" ?>  onclick="checkTipoNF(this.value);" required /> 
-                            <label class="form-check-label">Serviço</label>                
-                        </div>
-                    </div>
-                    <div class="col">
-                        <span class="explanation">Tipo da Nota Fiscal.</span>
-                    </div>
-                </div>
-            </div> 
+            <input type="hidden" id="tipoNF" name="tipoNF" value="<?= $requisicao->getTipoNF() ?>" />
             <div class="form-group">
                 <div class="form-row">                
                     <div class="col">                    
                         <div class="input-group-prepend">
-                            <span class="input-group-text">NF</span>
+                            <span class="input-group-text">NF<?= $requisicao->getTipoNF() === "servico" ? "S" : "" ?></span>
                             <input type="text" class="form-control" id="nf" name="nf" maxlength="70" value="<?= $object->getNf() ?>"/>
                         </div>                    
                     </div>
@@ -239,32 +203,41 @@ require_once '../include/header.php';
                     </div>              
                 </div>
             </div>
-            <div class="form-group" id="codigoVerificacaoField">
-                <div class="form-row">                
-                    <div class="col">                    
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Código de verificação</span>
-                            <input type="text" class="form-control" id="codigoVerificacao" name="codigoVerificacao" maxlength="70" value="<?= $object->getCodigoVerificacao() ?>"/>
-                        </div>                    
+            <?php
+            if ($requisicao->getTipoNF() === "servico") {
+                ?>
+                <div class="form-group" id="codigoVerificacaoField">
+                    <div class="form-row">                
+                        <div class="col">                    
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Código de verificação</span>
+                                <input type="text" class="form-control" id="codigoVerificacao" name="codigoVerificacao" maxlength="70" value="<?= $object->getCodigoVerificacao() ?>"/>
+                            </div>                    
+                        </div>
+                        <div class="col">
+                            <span class="explanation">Código de verificação para verificação da NF.</span>
+                        </div>              
                     </div>
-                    <div class="col">
-                        <span class="explanation">Código de verificação para verificação da NF.</span>
-                    </div>              
                 </div>
-            </div>
-            <div class="form-group" id="chaveAcessoField">
-                <div class="form-row">                
-                    <div class="col">                    
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Chave de acesso</span>
-                            <input type="text" class="form-control" id="chaveAcesso" name="chaveAcesso" maxlength="70" value="<?= $object->getChaveAcesso() ?>"/>
-                        </div>                    
+                <?php
+            } else {
+                ?>
+                <div class="form-group" id="chaveAcessoField">
+                    <div class="form-row">                
+                        <div class="col">                    
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Chave de acesso</span>
+                                <input type="text" class="form-control" id="chaveAcesso" name="chaveAcesso" maxlength="70" value="<?= $object->getChaveAcesso() ?>"/>
+                            </div>                    
+                        </div>
+                        <div class="col">
+                            <span class="explanation">Chave de acesso para verificação da NF.</span>
+                        </div>              
                     </div>
-                    <div class="col">
-                        <span class="explanation">Chave de acesso para verificação da NF.</span>
-                    </div>              
-                </div>
-            </div>            
+                </div>    
+                <?php
+            }
+            ?>
             <div class="form-group">
                 <div class="form-row">                
                     <div class="col">                    
@@ -285,9 +258,9 @@ require_once '../include/header.php';
                             <span class="input-group-text">Itens</span>                                                    
                             <table border="0" cellpadding="7" cellspacing="0" style="border: 1px solid lightblue;" width="100%">
                                 <tr>
-                                    <th width="10%">Número</th>
+                                    <th width="5%">Nº</th>
                                     <th width="35%">Descrição</th>
-                                    <th width="15%">Valor</th>
+                                    <th width="20%">Valor</th>
                                     <th width="15%">Qtd Max</th>
                                     <th width="15%">Qtd Usada</th>
                                     <th width="20%">Qtd NF</th>
@@ -311,8 +284,14 @@ require_once '../include/header.php';
                                                 <?= $item->getDescricao() ?>
                                             </td>
                                             <td>R$ 
-                                                <?= $item->getValor() ?>
-                                                <input type="hidden" name="valorItem<?= $i ?>" id="valorItem<?= $i ?>" value="<?= $item->getValor() ?>">
+                                                <?= number_format((float)$item->getValor(), 2, ",", ".") ?>
+                                                <?php
+                                                if ($requisicao->getTipoNE() === "ordinario") {
+                                                    ?>
+                                                    <input type="hidden" name="valorItem<?= $i ?>" id="valorItem<?= $i ?>" value="<?= $item->getValor() ?>">
+                                                    <?php
+                                                }
+                                                ?>
                                             </td>
                                             <td>
                                                 <?= $item->getQuantidade() ?>
@@ -321,13 +300,27 @@ require_once '../include/header.php';
                                                 <?= $total ?>
                                             </td>
                                             <td>
-                                                <input type="number" class="form-control" id="quantidadeItem<?= $i; ?>" name="quantidadeItem<?= $i; ?>" max="<?= $notaFiscal_has_item->getQuantidade() + $item->getQuantidade() - $total ?>" min="0" value="<?= $notaFiscal_has_item != null ? $notaFiscal_has_item->getQuantidade() : 0; ?>" style="width: 95px;" <?= ($item->getQuantidade() - $total) === 0 ? "  " : "" ?> onchange="fillValorNF();"/>
-                                                <input type="hidden" name="idItem<?= $i; ?>" value="<?= $item->getId(); ?>" />
                                                 <?php
-                                                if ($object != null) {
+                                                if ($requisicao->getTipoNE() === "ordinario") {
                                                     ?>
-                                                    <input type="hidden" name="idNotaFiscal<?= $i; ?>" value="<?= $object->getId(); ?>" />
+                                                    <input type="number" class="form-control" id="quantidadeItem<?= $i; ?>" name="quantidadeItem<?= $i; ?>" max="<?= $notaFiscal_has_item != null ? ($notaFiscal_has_item->getQuantidade() + $item->getQuantidade() - $total) : $item->getQuantidade() ?>" min="0" value="<?= ($notaFiscal_has_item != null && !empty($notaFiscal_has_item->getQuantidade())) ? $notaFiscal_has_item->getQuantidade() : 0; ?>" style="width: 95px;" <?= ($item->getQuantidade() - $total) === 0 ? "  " : "" ?> onchange="fillValorNF();"/>
                                                     <?php
+                                                } else {
+                                                    ?>
+                                                    <input type="number" class="form-control" value="<?= ($notaFiscal_has_item != null && !empty($notaFiscal_has_item->getQuantidade())) ? $notaFiscal_has_item->getQuantidade() : 0; ?>" style="width: 95px;" <?= ($item->getQuantidade() - $total) === 0 ? "  " : "" ?> readonly />
+                                                    <?php
+                                                }
+                                                if ($requisicao->getTipoNE() === "ordinario") {
+                                                    ?>
+                                                    <input type="hidden" name="idItem<?= $i; ?>" value="<?= $item->getId(); ?>" />
+                                                    <?php
+                                                }
+                                                if ($object != null) {
+                                                    if ($requisicao->getTipoNE() === "ordinario") {
+                                                        ?>
+                                                        <input type="hidden" name="idNotaFiscal<?= $i; ?>" value="<?= $object->getId(); ?>" />
+                                                        <?php
+                                                    }
                                                 }
                                                 ?>
                                             </td>
@@ -349,7 +342,13 @@ require_once '../include/header.php';
                     <div class="col">                    
                         <div class="input-group-prepend">
                             <span class="input-group-text">Valor R$</span>
-                            <input type="text" class="form-control" id="valorNF" name="valorNF" maxlength="25" value="<?= $object->getValorNF() ?>" onkeypress="return event.charCode === 44 || (event.charCode >= 48 && event.charCode <= 57);" />
+                            <?php
+                            if ($requisicao->getTipoNE() === "ordinario") {
+                                ?>
+                                <input type="text" class="form-control" id="valorNF" name="valorNF" maxlength="25" value="<?= $object->getValorNF() ?>" onkeypress="return event.charCode === 44 || (event.charCode >= 48 && event.charCode <= 57);" />
+                            <?php } else { ?>
+                                <input type="text" class="form-control" value="<?= $object->getValorNF() ?>" readonly />
+                            <?php } ?>
                         </div>                    
                     </div>
                     <div class="col">
@@ -357,6 +356,7 @@ require_once '../include/header.php';
                     </div>                                                  
                 </div>
             </div>
+            <hr>
             <div class="form-group">
                 <div class="form-row">
                     <div class="col">                    
@@ -419,13 +419,13 @@ require_once '../include/header.php';
     </form>
 </div>
 <script>
-// Disable form submissions if there are invalid fields
+    // Disable form submissions if there are invalid fields
     (function () {
         'use strict';
         window.addEventListener('load', function () {
-// Get the forms we want to add validation styles to
+            // Get the forms we want to add validation styles to
             var forms = document.getElementsByClassName('needs-validation');
-// Loop over them and prevent submission
+            // Loop over them and prevent submission
             var validation = Array.prototype.filter.call(forms, function (form) {
                 form.addEventListener('submit', function (event) {
                     if (form.checkValidity() === false) {
@@ -447,28 +447,21 @@ require_once '../include/header.php';
         $('[name=chaveAcesso]').mask('0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000');
     });
 
-    var secoes = ["requisitante", "salc", "conformidade", "salc2", "almoxarifado", "tesouraria"];
-    for (i = 0; i < secoes.length; i++) {
-        if (getCookie(secoes[i]) === "1") {
-            minimize(secoes[i]);
-        }
-    }
-
-    function checkTipoNF(tipoNF) {
-        var codigoVerificacao = document.getElementById("codigoVerificacaoField");
-
-        var chaveAcesso = document.getElementById("chaveAcessoField");
-        if (tipoNF === "servico") {
-            codigoVerificacao.style.display = "";
-            chaveAcesso.style.display = "none";
-        } else if (tipoNF === "material") {
-            codigoVerificacao.style.display = "none";
-            chaveAcesso.style.display = "";
-        } else {
-            codigoVerificacao.style.display = "none";
-            chaveAcesso.style.display = "none";
-        }
-    }
+    //    function checkTipoNF() {
+    //        var tipoNF = document.getElementById("tipoNF").value;
+    //        var codigoVerificacao = document.getElementById("codigoVerificacaoField");
+    //        var chaveAcesso = document.getElementById("chaveAcessoField");
+    //        if (tipoNF === "servico") {
+    //            codigoVerificacao.style.display = "";
+    //            chaveAcesso.style.display = "none";
+    //        } else if (tipoNF === "material") {
+    //            codigoVerificacao.style.display = "none";
+    //            chaveAcesso.style.display = "";
+    //        } else {
+    //            codigoVerificacao.style.display = "none";
+    //            chaveAcesso.style.display = "none";
+    //        }
+    //    }
 
     function fillValorNF() {
         var valorNF = document.getElementById("valorNF");

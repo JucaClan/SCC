@@ -192,12 +192,32 @@ require_once '../include/header.php';
         font-size: 12px;
         color: red;
     }
+
+    .itensTable th, td {
+        border: 1px dotted lightblue;
+    }
 </style>
 <div class="conteudo">  
     <form accept-charset="UTF-8" action="../Controller/FiscalizacaoController.php?action=<?= $object->getId() > 0 ? 'update' : 'insert' ?>&id=<?= $object->getId() ?>" class="needs-validation" novalidate method="post" name="requisicao" id="requisicao">
         <h2><?= $object->getId() > 0 ? "Editar" : "Cadastrar" ?> Requisição | <a href="#" onclick="document.location = 'FiscalizacaoController.php?action=getAllList';">Voltar</a> | <button type="submit" class="btn btn-success">Salvar</button></h2>    
         <hr> 
         <?php
+        
+        function checkPrazo($dataPrazo) {
+            $hoje = new DateTime();
+            $dateDif = date_diff($hoje, new DateTime($dataPrazo)); 
+            $situacao = "";
+            if($dateDif->format('%a') > 0 && $dateDif->format('%R') === "-") {
+                $situacao = "<span class='alert alert-danger'><b>" . dateFormat($dataPrazo) . "</b> Prazo vencido há " . $dateDif->format('%a') . " dia(s)</span>";
+            } else if ($dateDif->format('%a') >= 0 && $dateDif->format('%a') < 7 && $dateDif->format('%R') === "+") {
+                $situacao = "<span class='alert alert-warning'><b>" . dateFormat($dataPrazo) . "</b> Prazo vencendo em " . $dateDif->format('%a') . " dia(s)</span>";
+            } else if ($dateDif->format('%a') >= 7 && $dateDif->format('%R') === "+") {
+                $situacao = "<span class='alert alert-success'><b>" . dateFormat($dataPrazo) . "</b> Prazo vencendo em " . $dateDif->format('%a') . " dia(s)</span>";
+            }
+            
+            return $situacao;
+        }
+        
         $button = "<div class='form-group' align='center'><button type='submit' class='btn btn-success'>Salvar</button></div>";
         $timeline = new Timeline($object);
         $object->setTimeline($timeline);
@@ -244,7 +264,7 @@ require_once '../include/header.php';
                 </li>
                 <li>
                     <div class="timestamp<?= $almox[0]; ?>" id="almoxarifadoTimestamp">
-                        ALMOXARIFADO
+                        <?= $object->getResponsavel() === "Aprovisionamento" ? "APROVISIONAMENTO" : "ALMOXARIFADO" ?>
                     </div>
                     <div class="status<?= $almox[0]; ?>" id="almoxarifadoStatus">
                         <h4><?= $almox[1]; ?></h4>
@@ -548,7 +568,7 @@ require_once '../include/header.php';
                         <div class="col">                        
                             <div class="form-check form-check-inline">    
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text">Tipo</span>
+                                    <span class="input-group-text">Tipo da Nota de Empenho</span>
                                 </div>
                                 &nbsp;&nbsp;<input type="radio" class="form-check-input" id="tipoNE" name="tipoNE" value="ordinario" <?= $object->getTipoNE() == "ordinario" ? "checked" : "" ?> <?= !$readonly ? "" : "disabled" ?>/> 
                                 <label class="form-check-label">Ordinário</label> 
@@ -562,7 +582,47 @@ require_once '../include/header.php';
                             <span class="explanation">Tipo da Nota de Empenho.</span>
                         </div>
                     </div>
-                </div>                                
+                </div>  
+                <div class="form-group">
+                    <div class="form-row">                
+                        <div class="col">                        
+                            <div class="form-check form-check-inline">    
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Tipo da Nota Fiscal</span>
+                                </div>
+                                &nbsp;&nbsp;<input type="radio" class="form-check-input" id="tipoNF" name="tipoNF" value="material" <?= $object->getTipoNF() == "material" ? "checked" : "" ?> <?= !$readonly ? "" : "disabled" ?>/> 
+                                <label class="form-check-label">Material</label> 
+                            </div>
+                            <div class="form-check form-check-inline"> 
+                                <input type="radio" class="form-check-input" id="tipoNF" name="tipoNF" value="servico" <?= $object->getTipoNF() == "servico" ? "checked" : "" ?> <?= !$readonly ? "" : "disabled" ?>/> 
+                                <label class="form-check-label">Serviço</label>                
+                            </div>
+                        </div>
+                        <div class="col">
+                            <span class="explanation">Tipo da Nota Fiscal.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-row">                
+                        <div class="col">                        
+                            <div class="form-check form-check-inline">    
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Responsável pelo recebimento</span>
+                                </div>
+                                &nbsp;&nbsp;<input type="radio" class="form-check-input" id="responsavel" name="responsavel" value="Almoxarifado" <?= $object->getResponsavel() == "Almoxarifado" ? "checked" : "" ?> <?= !$readonly ? "" : "disabled" ?>/> 
+                                <label class="form-check-label">Almoxarifado</label> 
+                            </div>
+                            <div class="form-check form-check-inline"> 
+                                <input type="radio" class="form-check-input" id="responsavel" name="responsavel" value="Aprovisionamento" <?= $object->getResponsavel() == "Aprovisionamento" ? "checked" : "" ?> <?= !$readonly ? "" : "disabled" ?>/> 
+                                <label class="form-check-label">Aprovisionamento</label>                
+                            </div>
+                        </div>
+                        <div class="col">
+                            <span class="explanation">Responsável pela verificação dos produtos/serviços.</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <div class="form-row">                
                         <div class="col">
@@ -578,30 +638,38 @@ require_once '../include/header.php';
                 </div>
                 <h2 class="subtitulo">Itens</h2>
                 <div id="itensInseridos" style="margin: 7px;">                    
-                    <table border="0" cellpadding="7" cellspacing="0" width="100%">
+                    <table border="0" cellpadding="7" cellspacing="0" width="100%" class="itensTable">
                         <tr>
-                            <th>Número do item</th>
-                            <th>Descrição</th>
-                            <th>Quantidade</th>
-                            <th>Valor Unitário</th>
-                            <th>&nbsp;</th>
+                            <th width="10%">Número do item</th>
+                            <th width="60%">Descrição</th>
+                            <th width="10%">Quantidade</th>
+                            <th width="10%">Valor Unitário</th>
+                            <th width="10%">&nbsp;</th>
                         </tr>
                         <?php
-                        $totalValue = 0;
+                        $totalValue = 0.0;
                         if (isset($itemList) && is_array($itemList) && isAdminLevel($LISTAR_FISCALIZACAO)) {
+                            $i = 0;
                             foreach ($itemList as $item) {
-                                $totalValue += floatval($item->getValor()) * intval($item->getQuantidade());
+                                $totalValue += (float) str_replace(",", ".", $item->getValor()) * (int) $item->getQuantidade();
                                 ?> 
-                                <tr>
-                                    <td width="10%"><?= $item->getNumeroItem() ?></td>
-                                    <td width="60%"><?= $item->getDescricao() ?></td>
-                                    <td width="10%"><?= $item->getQuantidade() ?></td>
-                                    <td width="10%">R$ <?= $item->getValor() ?></td>
-                                    <td width="10%"><input type="button" class="btn btn-danger" value="Excluir" onclick="excluir(<?= $item->getId() . ", " . $object->getId() ?>);" <?= !$readonly ? "" : "disabled" ?>></td> 
+                                <tr style="background-color: <?= $i % 2 == 0 ? "#fffef3" : "white" ?>;">
+                                    <td><?= $item->getNumeroItem() ?></td>
+                                    <td><?= $item->getDescricao() ?></td>
+                                    <td><?= $item->getQuantidade() ?></td>
+                                    <td>R$ <?= number_format((float)$item->getValor(), 2, ",", ".") ?></td>
+                                    <td><input type="button" class="btn btn-danger" value="Excluir" onclick="excluir(<?= $item->getId() . ", " . $object->getId() ?>);" <?= !$readonly ? "" : "disabled" ?>></td> 
                                     <?php
+                                    $i++;
                                 }
                             }
                             ?>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td><b>R$ <?= number_format((float)$totalValue, 2, ",", ".") ?></b></td>
+                            <td>&nbsp;</td>
                     </table>
                 </div>
                 <div>
@@ -663,10 +731,14 @@ require_once '../include/header.php';
                         var valor = parseFloat(document.getElementById("valor").value.replace(",", "."));
                         var quantidade = parseInt(document.getElementById("quantidade").value.replace(",", "."));
                         var totalValue = <?= $totalValue ?> + (valor * quantidade);
-                        for (i = 1; i <= total; i++) {
-                            valor = parseFloat(document.getElementById("valor" + i).value.replace(",", ".")).toFixed(2);
+                        //alert(totalValue);
+                        for (var i = 1; i <= total; i++) {
+                            valor = parseFloat(document.getElementById("valor" + i).value.replace(",", "."));
+                            //alert(valor);
                             quantidade = parseInt(document.getElementById("quantidade" + i).value.replace(",", "."));
-                            totalValue = parseFloat(totalValue).toFixed(2) + (valor * quantidade);
+                            //alert(quantidade);
+                            totalValue = eval(parseFloat(totalValue) + (valor * quantidade));
+                            //alert(totalValue);
                         }
                         document.getElementById("valorNE").value = !isNaN(totalValue) ? parseFloat(totalValue).toFixed(2).toString().replace(".", ",") : 0;
                     }
@@ -827,7 +899,7 @@ require_once '../include/header.php';
                             </div>                    
                         </div>
                         <div class="col">
-                            <span class="explanation">Data de envio da Nota de Empenho pela SALC ao Almoxarifado.</span>
+                            <span class="explanation">Data de envio da Nota de Empenho pela SALC ao Almoxarifado/Aprovisionamento.</span>
                         </div>
                     </div>                    
                 </div>
@@ -952,12 +1024,12 @@ require_once '../include/header.php';
                     <div class="form-row">
                         <div class="col">                    
                             <div class="input-group-prepend">
-                                <span class="input-group-text">Data Protocolo no Almoxarifado</span>
+                                <span class="input-group-text">Data Protocolo no Almoxarifado/Aprovisionamento</span>
                                 <input type="date" class="form-control" id="dataProtocoloAlmox" name="dataProtocoloAlmox" value="<?= $object->getDataProtocoloAlmox() ?>" <?= !$readonly ? "" : "disabled" ?> />
                             </div>                    
                         </div>
                         <div class="col">
-                            <span class="explanation">Data em que a requisição foi protocolada no Almoxarifado.</span>
+                            <span class="explanation">Data em que a requisição foi protocolada no Almoxarifado/Aprovisionamento.</span>
                         </div>
                     </div>
                 </div>
@@ -975,7 +1047,7 @@ require_once '../include/header.php';
             <h2 class="alert alert-info">
                 <img src="../include/imagens/minimizar.png" width="25" height="25" onclick="minimize('almoxarifado');"> 
                 <img src="../include/imagens/maximizar.png" width="25" height="25" onclick="maximize('almoxarifado');"> 
-                ALMOXARIFADO
+                <?= $object->getResponsavel() === "Aprovisionamento" ? "APROVISIONAMENTO" : "ALMOXARIFADO" ?>
             </h2>   
             <div id="almoxarifado">
                 <div class="form-group">
@@ -1103,7 +1175,7 @@ require_once '../include/header.php';
                 <h2 class="alert alert-info">
                     <img src="../include/imagens/minimizar.png" width="25" height="25" onclick="minimize('tesouraria');"> 
                     <img src="../include/imagens/maximizar.png" width="25" height="25" onclick="maximize('tesouraria');"> 
-                    ALMOXARIFADO / TESOURARIA
+                    <?= $object->getResponsavel() === "Aprovisionamento" ? "APROVISIONAMENTO" : "ALMOXARIFADO" ?> / TESOURARIA
                 </h2>
                 <div id="tesouraria"> 
                     <div class="form-group">
@@ -1115,16 +1187,19 @@ require_once '../include/header.php';
                                 </div>                    
                             </div>
                             <div class="col">
-                                <span class="explanation">Observações relativas ao Almoxarifado e/ou Tesouraria.</span>
+                                <span class="explanation">Observações relativas ao Almoxarifado/Aprovisionamento e/ou Tesouraria.</span>
                             </div>
                         </div>
                     </div>
                     <table class="table table-bordered" id="notasCredito">
                         <thead>                            
                             <tr>
-                                <th>Tipo NF</th>   
-                                <th>NF</th>
-                                <th>Valor NF</th>
+                                <?php if ($object->getTipoNE() !== "ordinario") { ?>
+                                    <th>Data Pedido</th>  
+                                <?php } ?>
+                                <th>NF<?= $object->getTipoNF() === "servico" ? "S" : "" ?></th>
+                                <th>Valor NF<?= $object->getTipoNF() === "servico" ? "S" : "" ?></th>
+                                <th>Data Prazo</th>
                                 <th>Data Entrega</th>
                                 <th>Data Remessa Tesouraria</th>                             
                                 <th>Data Liquidação</th>                                
@@ -1138,21 +1213,26 @@ require_once '../include/header.php';
                         <tbody>
                             <?php
                             if (isset($notaFiscalList) && is_array($notaFiscalList) && isAdminLevel($LISTAR_FISCALIZACAO)) {
-                                foreach ($notaFiscalList as $object) {
+                                foreach ($notaFiscalList as $NFobject) {
                                     ?> 
                                     <tr>
-                                        <td><?= $object->getTipoNF() ?></td>
-                                        <td><?= $object->getNf() ?></td>
-                                        <td>R$ <?= $object->getValorNF() ?></td>
-                                        <td><?= dateFormat($object->getDataEntrega()) ?></td>
-                                        <td><?= dateFormat($object->getDataRemessaTesouraria()) ?></td>
-                                        <td><input type="hidden" name="dataLiquidacao" value="<?= $object->getDataLiquidacao() ?>"><?= $object->getDataLiquidacao() ?></td>                               
+                                        <?php if ($object->getTipoNE() !== "ordinario") { ?>
+                                            <td><?= dateFormat($NFobject->getDataPedido()) ?></td>
+                                        <?php } ?>
+                                        <td><?= $NFobject->getNf() ?></td>
+                                        <td>R$ <?= $NFobject->getValorNF() ?></td>
+                                        <td>                                                
+                                                <?= checkPrazo($NFobject->getDataPrazoEntrega()) ?>
+                                        </td>
+                                        <td><?= dateFormat($NFobject->getDataEntrega()) ?></td>
+                                        <td><?= dateFormat($NFobject->getDataRemessaTesouraria()) ?></td>
+                                        <td><input type="hidden" name="dataLiquidacao" value="<?= $NFobject->getDataLiquidacao() ?>"><?= $NFobject->getDataLiquidacao() ?></td>                               
                                         <td>
                                             <?php if (isAdminLevel($EDITAR_FISCALIZACAO)) { ?>
-                                                <a href="../Controller/FiscalizacaoController.php?action=update_nf&id=<?= $object->getId() ?>"><img src='../include/imagens/editar.png' width='25' height='25' title='Editar'></a>
+                                                <a href="../Controller/FiscalizacaoController.php?action=update_nf&id=<?= $NFobject->getId() ?>"><img src='../include/imagens/editar.png' width='25' height='25' title='Editar'></a>
                                             <?php } ?>
                                             <?php if (isAdminLevel($EXCLUIR_FISCALIZACAO)) { ?>
-                                                <a href="../Controller/FiscalizacaoController.php?action=delete_nf&id=<?= $object->getId() ?>"><img src='../include/imagens/excluir.png' width='25' height='25' title='Excluir'></a>
+                                                <a href="../Controller/FiscalizacaoController.php?action=delete_nf&id=<?= $NFobject->getId() ?>"><img src='../include/imagens/excluir.png' width='25' height='25' title='Excluir'></a>
                                             <?php } ?>
                                         </td>               
                                     </tr>

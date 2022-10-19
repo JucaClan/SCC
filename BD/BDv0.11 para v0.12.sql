@@ -403,12 +403,14 @@ CREATE TABLE IF NOT EXISTS `scc`.`Requisicao` (
   `dataProtocoloConformidade` DATE NULL,
   `dataProtocoloSalc2` DATE NULL,
   `dataProtocoloAlmox` DATE NULL,
+  `tipoNF` VARCHAR(25) NULL,
+  `responsavel` VARCHAR(25) NULL,
   PRIMARY KEY (`idRequisicao`),
-  INDEX `fk_Requisicao_Secao1_idx` (`Secao_idSecao` ASC),
-  INDEX `fk_Requisicao_NotaCredito1_idx` (`NotaCredito_idNotaCredito` ASC),
-  INDEX `fk_Requisicao_Categoria1_idx` (`Categoria_idCategoria` ASC),
-  INDEX `fk_Requisicao_NotaCredito2_idx` (`NotaCredito_idNotaCreditoReforco` ASC),
-  INDEX `fk_Requisicao_Processo1_idx` (`Processo_idProcesso` ASC),
+  INDEX `fk_Requisicao_Secao1_idx` (`Secao_idSecao` ASC) VISIBLE,
+  INDEX `fk_Requisicao_NotaCredito1_idx` (`NotaCredito_idNotaCredito` ASC) VISIBLE,
+  INDEX `fk_Requisicao_Categoria1_idx` (`Categoria_idCategoria` ASC) VISIBLE,
+  INDEX `fk_Requisicao_NotaCredito2_idx` (`NotaCredito_idNotaCreditoReforco` ASC) VISIBLE,
+  INDEX `fk_Requisicao_Processo1_idx` (`Processo_idProcesso` ASC) VISIBLE,
   CONSTRAINT `fk_Requisicao_Secao1`
     FOREIGN KEY (`Secao_idSecao`)
     REFERENCES `scc`.`Secao` (`idSecao`)
@@ -435,7 +437,6 @@ CREATE TABLE IF NOT EXISTS `scc`.`Requisicao` (
     ON DELETE SET NULL
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
-
 
 -- -----------------------------------------------------
 -- Table `scc`.`Visitante`
@@ -497,8 +498,10 @@ CREATE TABLE IF NOT EXISTS `scc`.`NotaFiscal` (
   `dataRemessaTesouraria` DATE NULL,
   `Requisicao_idRequisicao` INT NOT NULL,
   `dataLiquidacao` DATE NULL,
+  `dataPedido` DATE NULL,
+  `dataPrazoEntrega` DATE NULL,
   PRIMARY KEY (`idNotaFiscal`),
-  INDEX `fk_NotaFiscal_Requisicao1_idx` (`Requisicao_idRequisicao` ASC),
+  INDEX `fk_NotaFiscal_Requisicao1_idx` (`Requisicao_idRequisicao` ASC) VISIBLE,
   CONSTRAINT `fk_NotaFiscal_Requisicao1`
     FOREIGN KEY (`Requisicao_idRequisicao`)
     REFERENCES `scc`.`Requisicao` (`idRequisicao`)

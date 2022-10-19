@@ -14,6 +14,8 @@ class NotaFiscal {
             $dataRemessaTesouraria,
             $idRequisicao,
             $dataLiquidacao,
+            $dataPedido,
+            $dataPrazoEntrega,
             $itemList;
 
     function __construct($idOrRow = 0) {
@@ -32,6 +34,8 @@ class NotaFiscal {
             $this->dataRemessaTesouraria = $idOrRow["dataRemessaTesouraria"];
             $this->idRequisicao = $idOrRow["idRequisicao"];
             $this->dataLiquidacao = $idOrRow["dataLiquidacao"];
+            $this->dataPedido = $idOrRow["dataPedido"];
+            $this->dataPrazoEntrega = $idOrRow["dataPrazoEntrega"];
         }
     }
 
@@ -137,6 +141,22 @@ class NotaFiscal {
 
     function setItemList($itemList) {
         $this->itemList = $itemList;
+    }
+
+    public function getDataPedido() {
+        return $this->dataPedido;
+    }
+
+    public function getDataPrazoEntrega() {
+        return $this->dataPrazoEntrega;
+    }
+
+    public function setDataPedido($dataPedido) {
+        $this->dataPedido = $dataPedido;
+    }
+
+    public function setDataPrazoEntrega($dataPrazoEntrega) {
+        $this->dataPrazoEntrega = $dataPrazoEntrega;
     }
 
 }

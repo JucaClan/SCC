@@ -49,6 +49,7 @@ class FiscalizacaoController {
         // SALC
         $this->requisicaoInstance->setDataNE(filter_input(INPUT_POST, "dataNE", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setTipoNE(filter_input(INPUT_POST, "tipoNE", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
+        $this->requisicaoInstance->setTipoNF(filter_input(INPUT_POST, "tipoNF", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setNe(filter_input(INPUT_POST, "ne", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setValorNE(str_replace(",", ".", filter_input(INPUT_POST, "valorNE", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES)));
         $this->requisicaoInstance->setObservacaoSALC(filter_input(INPUT_POST, 'observacaoSALC', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
@@ -60,6 +61,7 @@ class FiscalizacaoController {
         $this->requisicaoInstance->setIdNotaCreditoReforco(filter_input(INPUT_POST, "idNotaCreditoReforco", FILTER_VALIDATE_INT));
         $this->requisicaoInstance->setDataProtocoloConformidade(filter_input(INPUT_POST, "dataProtocoloConformidade", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setDataProtocoloAlmox(filter_input(INPUT_POST, "dataProtocoloAlmox", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
+        $this->requisicaoInstance->setResponsavel(filter_input(INPUT_POST, "responsavel", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         // CONFORMIDADE
         $this->requisicaoInstance->setDataParecer(filter_input(INPUT_POST, "dataParecer", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setParecer(filter_input(INPUT_POST, "parecer", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
@@ -120,6 +122,8 @@ class FiscalizacaoController {
         $idRequisicao = filter_input(INPUT_POST, "idRequisicao", FILTER_VALIDATE_INT);
         $this->notaFiscalInstance->setIdRequisicao(!empty($idRequisicao) ? $idRequisicao : filter_input(INPUT_GET, "idRequisicao", FILTER_VALIDATE_INT));
         $this->notaFiscalInstance->setDataLiquidacao(filter_input(INPUT_POST, "dataLiquidacao", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
+        $this->notaFiscalInstance->setDataPedido(filter_input(INPUT_POST, "dataPedido", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
+        $this->notaFiscalInstance->setDataPrazoEntrega(filter_input(INPUT_POST, "dataPrazoEntrega", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         // Quantidade a ser inserida em NotaFiscal_has_Item
         $i = 1;
         $idItem = filter_input(INPUT_POST, "idItem$i", FILTER_VALIDATE_INT);

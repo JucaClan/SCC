@@ -9,7 +9,7 @@ class RequisicaoDAO {
         try {
             $c = connect();
             $sql = "START TRANSACTION;"
-                    . "INSERT INTO `scc`.`Requisicao` (`dataRequisicao`, `om`, `Secao_idSecao`, `NotaCredito_idNotaCredito`, `Categoria_idCategoria`, `modalidade`, `numeroModalidade`, `ug`, `omModalidade`, `empresa`, `cnpj`, `contato`, `dataNE`, `tipoNE`, `ne`, `valorNE`, `observacaoSALC`, `dataEnvioNE`, `valorAnulado`, `justificativaAnulado`, `valorReforcado`, `observacaoReforco`, `NotaCredito_idNotaCreditoReforco`, `dataParecer`, `parecer`, `observacaoConformidade`, `dataAssinatura`, `dataEnvioNEEmpresa`, `dataPrazoEntrega`, `dataOficio`, `diex`, `dataDiex`, `Processo_idProcesso`, `observacaoAlmox`, `dataProtocoloSalc1`, `dataProtocoloConformidade`, `dataProtocoloSalc2`, `dataProtocoloAlmox`) "
+                    . "INSERT INTO `scc`.`Requisicao` (`dataRequisicao`, `om`, `Secao_idSecao`, `NotaCredito_idNotaCredito`, `Categoria_idCategoria`, `modalidade`, `numeroModalidade`, `ug`, `omModalidade`, `empresa`, `cnpj`, `contato`, `dataNE`, `tipoNE`, `tipoNF`, `ne`, `valorNE`, `observacaoSALC`, `dataEnvioNE`, `valorAnulado`, `justificativaAnulado`, `valorReforcado`, `observacaoReforco`, `NotaCredito_idNotaCreditoReforco`, `dataParecer`, `parecer`, `observacaoConformidade`, `dataAssinatura`, `dataEnvioNEEmpresa`, `dataPrazoEntrega`, `dataOficio`, `diex`, `dataDiex`, `Processo_idProcesso`, `observacaoAlmox`, `dataProtocoloSalc1`, `dataProtocoloConformidade`, `dataProtocoloSalc2`, `dataProtocoloAlmox`, `responsavel`) "
                     . " VALUES("
                     . (!empty($object->getDataRequisicao()) ? "'" . $object->getDataRequisicao() . "' " : "NULL ")
                     . ", '" . $object->getOm() . "'"
@@ -25,6 +25,7 @@ class RequisicaoDAO {
                     . ", '" . $object->getContato() . "'"
                     . ", " . (!empty($object->getDataNE()) ? "'" . $object->getDataNE() . "' " : "NULL ")
                     . ", '" . $object->getTipoNE() . "'"
+                    . ", '" . $object->getTipoNF() . "'"
                     . ", '" . $object->getNe() . "'"
                     . ", '" . (empty($object->getValorNE()) ? "0.0" : $object->getValorNE()) . "'"
                     . ", '" . $object->getObservacaoSALC() . "'"
@@ -49,6 +50,7 @@ class RequisicaoDAO {
                     . ", " . (!empty($object->getDataProtocoloConformidade()) ? "'" . $object->getDataProtocoloConformidade() . "' " : "NULL ")
                     . ", " . (!empty($object->getDataProtocoloSalc2()) ? "'" . $object->getDataProtocoloSalc2() . "' " : "NULL ")
                     . ", " . (!empty($object->getDataProtocoloAlmox()) ? "'" . $object->getDataProtocoloAlmox() . "' " : "NULL ")
+                    . ", '" . $object->getResponsavel() . "'"
                     . ");SET @idRequisicao = LAST_INSERT_ID();";
             $itemList = $object->getItemList();
             if (!is_null($itemList)) {
@@ -94,6 +96,7 @@ class RequisicaoDAO {
                     . ", contato = '" . $object->getContato() . "' "
                     . ", dataNE = " . (!empty($object->getDataNE()) ? "'" . $object->getDataNE() . "' " : "NULL ")
                     . ", tipoNE = '" . $object->getTipoNE() . "' "
+                    . ", tipoNF = '" . $object->getTipoNF() . "' "
                     . ", ne = '" . $object->getNe() . "' "
                     . ", valorNE = '" . (empty($object->getValorNE()) ? "0.0" : $object->getValorNE()) . "' "
                     . ", observacaoSALC = '" . $object->getObservacaoSALC() . "' "
@@ -118,6 +121,7 @@ class RequisicaoDAO {
                     . ", dataProtocoloConformidade = " . (!empty($object->getDataProtocoloConformidade()) ? "'" . $object->getDataProtocoloConformidade() . "' " : "NULL ")
                     . ", dataProtocoloSalc2 = " . (!empty($object->getDataProtocoloSalc2()) ? "'" . $object->getDataProtocoloSalc2() . "' " : "NULL ")
                     . ", dataProtocoloAlmox = " . (!empty($object->getDataProtocoloAlmox()) ? "'" . $object->getDataProtocoloAlmox() . "' " : "NULL ")
+                    . ", responsavel = '" . $object->getResponsavel() . "' "
                     . " WHERE idRequisicao = " . $object->getId() . ";";
             $itemList = $object->getItemList();
             if (!is_null($itemList)) {
@@ -332,6 +336,7 @@ class RequisicaoDAO {
             "contato" => $row["contato"],
             "dataNE" => $row["dataNE"],
             "tipoNE" => $row["tipoNE"],
+            "tipoNF" => $row["tipoNF"],
             "ne" => $row["ne"],
             "valorNE" => $row["valorNE"],
             "observacaoSALC" => $row["observacaoSALC"],
@@ -356,6 +361,7 @@ class RequisicaoDAO {
             "dataProtocoloConformidade" => $row["dataProtocoloConformidade"],
             "dataProtocoloSalc2" => $row["dataProtocoloSalc2"],
             "dataProtocoloAlmox" => $row["dataProtocoloAlmox"],
+            "responsavel" => $row["responsavel"],
             "itemList" => ""
         );
     }

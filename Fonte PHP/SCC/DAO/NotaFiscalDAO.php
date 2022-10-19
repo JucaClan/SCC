@@ -37,7 +37,7 @@ class NotaFiscalDAO {
         try {
             $c = connect();
             $sql = "START TRANSACTION;"
-                    . "INSERT INTO `scc`.`NotaFiscal` (`tipoNF`, `nf`, `codigoVerificacao`, `chaveAcesso`, `valorNF`, `descricao`, `dataEmissaoNF`, `dataEntrega`, `dataRemessaTesouraria`, `Requisicao_idRequisicao`, `dataLiquidacao`) "
+                    . "INSERT INTO `scc`.`NotaFiscal` (`tipoNF`, `nf`, `codigoVerificacao`, `chaveAcesso`, `valorNF`, `descricao`, `dataEmissaoNF`, `dataEntrega`, `dataRemessaTesouraria`, `Requisicao_idRequisicao`, `dataLiquidacao`, `dataPedido`, `dataPrazoEntrega`) "
                     . "VALUES ("
                     . "'" . $object->getTipoNF() . "' "
                     . ", '" . $object->getNf() . "' "
@@ -50,6 +50,8 @@ class NotaFiscalDAO {
                     . ", " . (!empty($object->getDataRemessaTesouraria()) ? "'" . $object->getDataRemessaTesouraria() . "' " : "NULL ")
                     . ", " . (!empty($object->getIdRequisicao()) ? $object->getIdRequisicao() : "NULL ")
                     . ", " . (!empty($object->getDataLiquidacao()) ? "'" . $object->getDataLiquidacao() . "' " : "NULL ")
+                    . ", " . (!empty($object->getDataPedido()) ? "'" . $object->getDataPedido() . "' " : "NULL ")
+                    . ", " . (!empty($object->getDataPrazoEntrega()) ? "'" . $object->getDataPrazoEntrega() . "' " : "NULL ")
                     . ");SET @idNotaFiscal = LAST_INSERT_ID();";
             $itemList = $object->getItemList();
             if (!is_null($itemList)) {
@@ -88,8 +90,10 @@ class NotaFiscalDAO {
                         , `dataEntrega` = " . (!empty($object->getDataEntrega()) ? "'" . $object->getDataEntrega() . "' " : "NULL ") . "
                         , `dataRemessaTesouraria` = " . (!empty($object->getDataRemessaTesouraria()) ? "'" . $object->getDataRemessaTesouraria() . "' " : "NULL ") . "
                         , `Requisicao_idRequisicao` = '" . $object->getIdRequisicao() . "'
-                        , `dataLiquidacao` = " . (!empty($object->getDataLiquidacao()) ? "'" . $object->getDataLiquidacao() . "' " : "NULL ") . "                        
-                        WHERE `idNotaFiscal` = " . $object->getId() . ";";            
+                        , `dataLiquidacao` = " . (!empty($object->getDataLiquidacao()) ? "'" . $object->getDataLiquidacao() . "' " : "NULL ") . "
+                        , `dataPedido` = " . (!empty($object->getDataPedido()) ? "'" . $object->getDataPedido() . "' " : "NULL ") . "
+                        , `dataPrazoEntrega` = " . (!empty($object->getDataPrazoEntrega()) ? "'" . $object->getDataPrazoEntrega() . "' " : "NULL ") . "
+                        WHERE `idNotaFiscal` = " . $object->getId() . ";";
             $itemList = $object->getItemList();
             if (!is_null($itemList)) {
                 foreach ($itemList as $item) {
@@ -199,7 +203,7 @@ class NotaFiscalDAO {
             $sql = "SELECT * "
                     . " FROM `scc`.`NotaFiscal_has_Item` "
                     . " INNER JOIN NotaFiscal ON idNotaFiscal = NotaFiscal_idNotaFiscal "
-                    . " WHERE `NotaFiscal_idNotaFiscal` = " . $idNotaFiscal . " AND `Item_idItem` = " . $idItem . ";";            
+                    . " WHERE `NotaFiscal_idNotaFiscal` = " . $idNotaFiscal . " AND `Item_idItem` = " . $idItem . ";";
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
                 $objectArray = $this->fillArray($row);
@@ -226,6 +230,8 @@ class NotaFiscalDAO {
             "dataRemessaTesouraria" => $row["dataRemessaTesouraria"],
             "idRequisicao" => $row["Requisicao_idRequisicao"],
             "dataLiquidacao" => $row["dataLiquidacao"],
+            "dataPedido" => $row["dataPedido"],
+            "dataPrazoEntrega" => $row["dataPrazoEntrega"]
         );
     }
 

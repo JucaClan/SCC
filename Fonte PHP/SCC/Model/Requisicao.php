@@ -20,6 +20,7 @@ class Requisicao {
             // SALC
             $dataNE,
             $tipoNE,
+            $tipoNF,
             $ne,
             $valorNE,
             $observacaoSALC,
@@ -31,6 +32,7 @@ class Requisicao {
             $idNotaCreditoReforco,
             $dataProtocoloConformidade,
             $dataProtocoloAlmox,
+            $responsavel,
             // Conformidade
             $dataParecer,
             $parecer,
@@ -76,6 +78,7 @@ class Requisicao {
             // SALC
             $this->dataNE = $idOrRow["dataNE"];
             $this->tipoNE = $idOrRow["tipoNE"];
+            $this->tipoNF = $idOrRow["tipoNF"];
             $this->ne = $idOrRow["ne"];
             $this->valorNE = $idOrRow["valorNE"];
             $this->observacaoSALC = $idOrRow["observacaoSALC"];
@@ -87,6 +90,7 @@ class Requisicao {
             $this->idNotaCreditoReforco = $idOrRow["idNotaCreditoReforco"];
             $this->dataProtocoloConformidade = $idOrRow["dataProtocoloConformidade"];
             $this->dataProtocoloAlmox = $idOrRow["dataProtocoloAlmox"];
+            $this->responsavel = $idOrRow["responsavel"];
             // Conformidade
             $this->dataParecer = $idOrRow["dataParecer"];
             $this->parecer = $idOrRow["parecer"];
@@ -456,6 +460,22 @@ class Requisicao {
 
     function setDataProtocoloSalc2($dataProtocoloSalc2) {
         $this->dataProtocoloSalc2 = $dataProtocoloSalc2;
+    }
+
+    public function getTipoNF() {
+        return $this->tipoNF;
+    }
+
+    public function setTipoNF($tipoNF) {
+        $this->tipoNF = $tipoNF;
+    }
+
+    public function getResponsavel() {
+        return $this->responsavel;
+    }
+
+    public function setResponsavel($responsavel) {
+        $this->responsavel = $responsavel;
     }
 
 }
