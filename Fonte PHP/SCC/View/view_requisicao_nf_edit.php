@@ -124,7 +124,7 @@ require_once '../include/header.php';
                                                     <?= $item->getDescricao() ?>
                                                 </td>
                                                 <td>R$ 
-                                                    <?= number_format((float)$item->getValor(), 2, ",", ".") ?>
+                                                    <?= $item->getValor() ?>
                                                     <input type="hidden" name="valorItem<?= $i ?>" id="valorItem<?= $i ?>" value="<?= $item->getValor() ?>">
                                                 </td>
                                                 <td>
@@ -284,7 +284,7 @@ require_once '../include/header.php';
                                                 <?= $item->getDescricao() ?>
                                             </td>
                                             <td>R$ 
-                                                <?= number_format((float)$item->getValor(), 2, ",", ".") ?>
+                                                <?= $item->getValor() ?>
                                                 <?php
                                                 if ($requisicao->getTipoNE() === "ordinario") {
                                                     ?>

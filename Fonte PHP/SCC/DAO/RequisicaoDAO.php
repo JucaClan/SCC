@@ -319,6 +319,66 @@ class RequisicaoDAO {
         }
     }
 
+    function getTotalItensQuantity($id) {
+        try {
+            $c = connect();
+            $sql = "SELECT SUM(quantidade) as quantidade "
+                    . " FROM Requisicao "
+                    . " INNER JOIN Item ON Requisicao_idRequisicao = idRequisicao "
+                    . " WHERE idRequisicao = $id";
+            $result = $c->query($sql);
+            while ($row = $result->fetch_assoc()) {
+                $quantidade = $row["quantidade"];
+            }
+            $c->close();
+            return isset($quantidade) ? $quantidade : 0;
+        } catch (Exception $e) {
+            throw($e);
+        }
+    }
+
+    function getTotalItensUsed($id) {
+        try {
+            $c = connect();
+            $sql = "SELECT SUM(NotaFiscal_has_Item.quantidade) as quantidade "
+                    . " FROM Requisicao "
+                    . " INNER JOIN Item ON Requisicao_idRequisicao = idRequisicao "
+                    . " INNER JOIN NotaFiscal_has_Item ON Item_idItem = IdItem "
+                    . " WHERE idRequisicao = $id";
+            $result = $c->query($sql);
+            while ($row = $result->fetch_assoc()) {
+                $quantidade = $row["quantidade"];
+            }
+            $c->close();
+            return isset($quantidade) ? $quantidade : 0;
+        } catch (Exception $e) {
+            throw($e);
+        }
+    }
+
+    function getTotalItensLiquidado($id) {
+        try {
+            $c = connect();
+            $sql = " SELECT SUM(NotaFiscal_has_Item.quantidade) as quantidade FROM Requisicao 
+                INNER JOIN NotaFiscal ON NotaFiscal.Requisicao_idRequisicao = idRequisicao 
+                INNER JOIN Item ON Item.Requisicao_idRequisicao = idRequisicao 
+                INNER JOIN NotaFiscal_has_Item ON Item_idItem = IdItem 
+                WHERE 
+                    NotaFiscal_has_Item.quantidade > 0 AND 
+                    idRequisicao = $id AND 
+                    dataLiquidacao != '' AND 
+                    dataLiquidacao IS NOT NULL";
+            $result = $c->query($sql);
+            while ($row = $result->fetch_assoc()) {
+                $quantidade = $row["quantidade"];
+            }
+            $c->close();
+            return isset($quantidade) ? $quantidade : 0;
+        } catch (Exception $e) {
+            throw($e);
+        }
+    }
+
     function fillArray($row) {
         return array(
             "id" => $row["idRequisicao"],

@@ -107,6 +107,17 @@ function formatValue($value) {
         color: #00cc00;/*#000;*/
         font-size: 10px;
     }
+    
+    .timestampYellow {
+        margin-bottom: 2px;
+        padding: 0px 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-weight: bold;
+        color: #cccc00;
+        font-size: 10px;
+    }
 
     .timestampNext {
         margin-bottom: 2px;
@@ -140,6 +151,17 @@ function formatValue($value) {
         height: 1px;
         background-color: #ccffcc;
     }
+    
+    .statusYellow {
+        padding: 0px 4px;
+        display: flex;
+        justify-content: center;
+        border: 2px solid;
+        border-radius: 7px;
+        border-color: #cccc00;
+        height: 1px;
+        /*background-color: #ffcccc;*/
+    }
 
     .statusNext {
         padding: 0px 4px;
@@ -162,6 +184,13 @@ function formatValue($value) {
     .statusCompleted h4 {
         color: #00cc00;/*#000;*/
         font-weight: bold;
+        font-size: 10px;
+        margin-top: 7px;
+    }
+    
+    .statusYellow h4 {
+        color: #cccc00; 
+        font-weight: normal;
         font-size: 10px;
         margin-top: 7px;
     }

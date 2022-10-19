@@ -168,7 +168,7 @@ class ItemDAO {
             $c = connect();
             $sql = "SELECT SUM(quantidade) as total 
                         FROM NotaFiscal_has_Item 
-                        WHERE Item_idItem = $idItem";   
+                        WHERE Item_idItem = $idItem";               
             $result = $c->query($sql);            
             while ($row = $result->fetch_assoc()) {
                 $total = $row["total"];

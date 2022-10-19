@@ -117,6 +117,17 @@ require_once '../include/header.php';
         font-size: 14px;
     }
 
+    .timestampYellow {
+        margin-bottom: 20px;
+        padding: 0px 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-weight: bold;
+        color: #cccc00;
+        font-size: 14px;
+    }
+    
     .timestampNext {
         margin-bottom: 20px;
         padding: 0px 40px;
@@ -137,7 +148,7 @@ require_once '../include/header.php';
         border-bottom: 2px solid;
         border-radius: 70px;
         border-color: #ffcccc;
-        height: 95px;
+        height: 115px;
         /*background-color: #ffcccc;*/
     }
 
@@ -150,8 +161,21 @@ require_once '../include/header.php';
                 border-right: 2px solid; */
         border-radius: 70px;
         border-color: #00cc00;
-        height: 95px;
+        height: 115px;
         background-color: #ccffcc;
+    }
+    
+    .statusYellow {
+        padding: 0px 40px;
+        display: flex;
+        justify-content: center;
+        border-top: 2px solid;
+        border-right: 2px solid;
+        border-bottom: 2px solid;
+        border-radius: 70px;
+        border-color: #cccc00;
+        height: 115px;
+        /*background-color: #ffcccc;*/
     }
 
     .statusNext {
@@ -163,7 +187,7 @@ require_once '../include/header.php';
         border-bottom: 2px solid;
         border-radius: 70px;
         border-color: red;
-        height: 95px;
+        height: 115px;
         /*background-color: #ffcccc;*/
     }
 
@@ -176,6 +200,13 @@ require_once '../include/header.php';
 
     .statusCompleted h4 {
         color: #00cc00;
+        font-weight: bold;
+        font-size: 12px;
+        margin-top: 7px;
+    }
+    
+    .statusYellow h4 {
+        color: #cccc00;
         font-weight: bold;
         font-size: 12px;
         margin-top: 7px;
@@ -202,22 +233,22 @@ require_once '../include/header.php';
         <h2><?= $object->getId() > 0 ? "Editar" : "Cadastrar" ?> Requisição | <a href="#" onclick="document.location = 'FiscalizacaoController.php?action=getAllList';">Voltar</a> | <button type="submit" class="btn btn-success">Salvar</button></h2>    
         <hr> 
         <?php
-        
+
         function checkPrazo($dataPrazo) {
             $hoje = new DateTime();
-            $dateDif = date_diff($hoje, new DateTime($dataPrazo)); 
+            $dateDif = date_diff($hoje, new DateTime($dataPrazo));
             $situacao = "";
-            if($dateDif->format('%a') > 0 && $dateDif->format('%R') === "-") {
+            if ($dateDif->format('%a') > 0 && $dateDif->format('%R') === "-") {
                 $situacao = "<span class='alert alert-danger'><b>" . dateFormat($dataPrazo) . "</b> Prazo vencido há " . $dateDif->format('%a') . " dia(s)</span>";
             } else if ($dateDif->format('%a') >= 0 && $dateDif->format('%a') < 7 && $dateDif->format('%R') === "+") {
                 $situacao = "<span class='alert alert-warning'><b>" . dateFormat($dataPrazo) . "</b> Prazo vencendo em " . $dateDif->format('%a') . " dia(s)</span>";
             } else if ($dateDif->format('%a') >= 7 && $dateDif->format('%R') === "+") {
                 $situacao = "<span class='alert alert-success'><b>" . dateFormat($dataPrazo) . "</b> Prazo vencendo em " . $dateDif->format('%a') . " dia(s)</span>";
             }
-            
+
             return $situacao;
         }
-        
+
         $button = "<div class='form-group' align='center'><button type='submit' class='btn btn-success'>Salvar</button></div>";
         $timeline = new Timeline($object);
         $object->setTimeline($timeline);
@@ -657,7 +688,7 @@ require_once '../include/header.php';
                                     <td><?= $item->getNumeroItem() ?></td>
                                     <td><?= $item->getDescricao() ?></td>
                                     <td><?= $item->getQuantidade() ?></td>
-                                    <td>R$ <?= number_format((float)$item->getValor(), 2, ",", ".") ?></td>
+                                    <td>R$ <?= $item->getValor() ?></td>
                                     <td><input type="button" class="btn btn-danger" value="Excluir" onclick="excluir(<?= $item->getId() . ", " . $object->getId() ?>);" <?= !$readonly ? "" : "disabled" ?>></td> 
                                     <?php
                                     $i++;
@@ -668,7 +699,7 @@ require_once '../include/header.php';
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
-                            <td><b>R$ <?= number_format((float)$totalValue, 2, ",", ".") ?></b></td>
+                            <td><b>R$ <?= number_format($totalValue, 2, ",", ".") ?></b></td>
                             <td>&nbsp;</td>
                     </table>
                 </div>
@@ -1199,7 +1230,9 @@ require_once '../include/header.php';
                                 <?php } ?>
                                 <th>NF<?= $object->getTipoNF() === "servico" ? "S" : "" ?></th>
                                 <th>Valor NF<?= $object->getTipoNF() === "servico" ? "S" : "" ?></th>
-                                <th>Data Prazo</th>
+                                <?php if ($object->getTipoNE() !== "ordinario") { ?>
+                                    <th>Data Prazo</th>
+                                <?php } ?>
                                 <th>Data Entrega</th>
                                 <th>Data Remessa Tesouraria</th>                             
                                 <th>Data Liquidação</th>                                
@@ -1221,9 +1254,11 @@ require_once '../include/header.php';
                                         <?php } ?>
                                         <td><?= $NFobject->getNf() ?></td>
                                         <td>R$ <?= $NFobject->getValorNF() ?></td>
-                                        <td>                                                
-                                                <?= checkPrazo($NFobject->getDataPrazoEntrega()) ?>
-                                        </td>
+                                        <?php if ($object->getTipoNE() !== "ordinario") { ?>
+                                            <td>                                                    
+                                                <?= empty($NFobject->getDataLiquidacao()) ? checkPrazo($NFobject->getDataPrazoEntrega()) : "<span class='alert alert-success'><b>Liquidado</b></span>" ?>                                            
+                                            </td>
+                                        <?php } ?>
                                         <td><?= dateFormat($NFobject->getDataEntrega()) ?></td>
                                         <td><?= dateFormat($NFobject->getDataRemessaTesouraria()) ?></td>
                                         <td><input type="hidden" name="dataLiquidacao" value="<?= $NFobject->getDataLiquidacao() ?>"><?= $NFobject->getDataLiquidacao() ?></td>                               
