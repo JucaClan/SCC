@@ -55,7 +55,7 @@ class Timeline {
             $dataProtocoloConformidade = $object->getDataProtocoloConformidade();
             $dataProtocoloSalc2 = $object->getDataProtocoloSalc2();
             $dataProtocoloAlmox = $object->getDataProtocoloAlmox();
-            // REQUISITANTE
+            // REQUISITANTE ////////////////////////////////////////////////////
             if (
                     !empty($object->getDataRequisicao()) &&
                     !empty($object->getOm()) &&
@@ -75,7 +75,7 @@ class Timeline {
             } else {
                 $this->requisitante = ["Yellow", "Aguardando..."];
             }
-            // SALC1
+            // SALC1 ///////////////////////////////////////////////////////////
             if (
                     !empty($object->getDataNE()) &&
                     !empty($object->getNe()) &&
@@ -100,7 +100,7 @@ class Timeline {
                 $dateDif = date_diff(new DateTime($dataProtocoloSalc1), $hoje);
                 $this->salc1 = ["Next", "<div align='center'>Ociosa há " . $dateDif->format('%a') . " dia(s)</div>"];
             }
-            // CONFORMIDADE
+            // CONFORMIDADE ////////////////////////////////////////////////////
             if (
                     !empty($object->getDataParecer()) &&
                     !empty($object->getParecer()) &&
@@ -130,7 +130,7 @@ class Timeline {
                 $dateDif = date_diff(new DateTime($dataProtocoloConformidade), $hoje);
                 $this->conformidade = ["Next", "<div align='center'>Ociosa há " . $dateDif->format('%a') . " dia(s)</div>"];
             }
-            // SALC2
+            // SALC2 ///////////////////////////////////////////////////////////
             if (
                     !empty($object->getDataEnvioNE()) &&
                     !empty($object->getDataProtocoloAlmox())
@@ -149,7 +149,7 @@ class Timeline {
                 $dateDif = date_diff(new DateTime($dataProtocoloSalc2), $hoje);
                 $this->salc2 = ["Next", "<div align='center'>Ociosa há " . $dateDif->format('%a') . " dia(s)</div>"];
             }
-            // ALMOX
+            // ALMOX ///////////////////////////////////////////////////////////
             if ($tipoNE === "ordinario") {
                 if (
                         $object->getHasNFsParaEntrega() === false &&
@@ -196,11 +196,12 @@ class Timeline {
                 $requisicaoDAO = new RequisicaoDAO();
                 $quantidade = $requisicaoDAO->getTotalItensQuantity($object->getId());
                 $totalUsed = $requisicaoDAO->getTotalItensUsed($object->getId());
-                $this->almox = ["Completed", "<div align='center'>Empenho Global/Estimativo<br>" . number_format($totalUsed / $quantidade * 100, 2, ",", ".") . "% Pedido</div>"];
+                $porcentagem = number_format($totalUsed / $quantidade * 100, 2, ",", ".");
+                $this->almox = [$porcentagem >= 100 ? "Completed" : "Yellow", "<div align='center'>Empenho Global/Estimativo<br>" . $porcentagem . "% Pedido</div>"];
             } else {
                 $this->almox = ["", ""];
             }
-            // TESOURARIA
+            // TESOURARIA //////////////////////////////////////////////////////
             if ($tipoNE === "ordinario") {
                 if (
                         $object->getHasNFsParaLiquidar() === false
@@ -211,11 +212,12 @@ class Timeline {
                 } else {
                     $this->tesouraria = ["Next", "Ociosa..."];
                 }
-            } else if ($this->almox[0] === "Completed" && $object->getId() > 0) {
+            } else if (($this->almox[0] === "Completed" || $this->almox[0] === "Yellow") && $object->getId() > 0) {
                 $requisicaoDAO = new RequisicaoDAO();
                 $quantidade = $requisicaoDAO->getTotalItensQuantity($object->getId());
                 $totalUsed = $requisicaoDAO->getTotalItensLiquidado($object->getId());
-                $this->tesouraria = ["Completed", "<div align='center'>Empenho Global/Estimativo<br>" . number_format($totalUsed / $quantidade * 100, 2, ",", ".") . "% Liquidado</div>"];
+                $porcentagem = number_format($totalUsed / $quantidade * 100, 2, ",", ".");
+                $this->tesouraria = [$porcentagem >= 100 ? "Completed" : "Yellow", "<div align='center'>Empenho Global/Estimativo<br>" . $porcentagem . "% Liquidado</div>"];
             } else {
                 $this->tesouraria = ["", ""];
             }

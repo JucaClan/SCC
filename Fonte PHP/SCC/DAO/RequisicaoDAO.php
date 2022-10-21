@@ -342,8 +342,8 @@ class RequisicaoDAO {
             $c = connect();
             $sql = "SELECT SUM(NotaFiscal_has_Item.quantidade) as quantidade "
                     . " FROM Requisicao "
-                    . " INNER JOIN Item ON Requisicao_idRequisicao = idRequisicao "
-                    . " INNER JOIN NotaFiscal_has_Item ON Item_idItem = IdItem "
+                    . " LEFT JOIN Item ON Requisicao_idRequisicao = idRequisicao "
+                    . " LEFT JOIN NotaFiscal_has_Item ON Item_idItem = IdItem "
                     . " WHERE idRequisicao = $id";
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
@@ -359,15 +359,22 @@ class RequisicaoDAO {
     function getTotalItensLiquidado($id) {
         try {
             $c = connect();
-            $sql = " SELECT SUM(NotaFiscal_has_Item.quantidade) as quantidade FROM Requisicao 
-                INNER JOIN NotaFiscal ON NotaFiscal.Requisicao_idRequisicao = idRequisicao 
-                INNER JOIN Item ON Item.Requisicao_idRequisicao = idRequisicao 
-                INNER JOIN NotaFiscal_has_Item ON Item_idItem = IdItem 
-                WHERE 
-                    NotaFiscal_has_Item.quantidade > 0 AND 
-                    idRequisicao = $id AND 
-                    dataLiquidacao != '' AND 
-                    dataLiquidacao IS NOT NULL";
+//            $sql = " SELECT SUM(NotaFiscal_has_Item.quantidade) as quantidade FROM Requisicao 
+//                LEFT JOIN NotaFiscal ON NotaFiscal.Requisicao_idRequisicao = idRequisicao 
+//                LEFT JOIN Item ON Item.Requisicao_idRequisicao = idRequisicao 
+//                LEFT JOIN NotaFiscal_has_Item ON Item_idItem = IdItem 
+//                WHERE 
+//                    NotaFiscal_has_Item.quantidade > 0 AND 
+//                    idRequisicao = $id AND 
+//                    dataLiquidacao != '' AND 
+//                    dataLiquidacao IS NOT NULL";
+            $sql = " SELECT SUM(NotaFiscal_has_Item.quantidade) as quantidade 
+                        FROM NotaFiscal_has_Item 
+                        INNER JOIN NotaFiscal ON 
+                            (dataLiquidacao != '' AND dataLiquidacao IS NOT NULL) AND 
+                            idNotaFiscal = NotaFiscal_idNotaFiscal
+                        INNER JOIN Requisicao ON 
+                            idRequisicao = $id";            
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
                 $quantidade = $row["quantidade"];

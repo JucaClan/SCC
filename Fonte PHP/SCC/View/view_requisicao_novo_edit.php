@@ -238,7 +238,9 @@ require_once '../include/header.php';
             $hoje = new DateTime();
             $dateDif = date_diff($hoje, new DateTime($dataPrazo));
             $situacao = "";
-            if ($dateDif->format('%a') > 0 && $dateDif->format('%R') === "-") {
+            if(empty($dataPrazo)) {
+                $situacao = "<span class='alert alert-danger'><b>Prazo não estipulado</b></span>";
+            } else if ($dateDif->format('%a') > 0 && $dateDif->format('%R') === "-") {
                 $situacao = "<span class='alert alert-danger'><b>" . dateFormat($dataPrazo) . "</b> Prazo vencido há " . $dateDif->format('%a') . " dia(s)</span>";
             } else if ($dateDif->format('%a') >= 0 && $dateDif->format('%a') < 7 && $dateDif->format('%R') === "+") {
                 $situacao = "<span class='alert alert-warning'><b>" . dateFormat($dataPrazo) . "</b> Prazo vencendo em " . $dateDif->format('%a') . " dia(s)</span>";

@@ -125,7 +125,8 @@ class ItemDAO {
             $sql = "SELECT * "
                     . ", REPLACE(valor, '.', ',') AS valor "
                     . " FROM Item "
-                    . " WHERE Requisicao_idRequisicao = $id";
+                    . " WHERE Requisicao_idRequisicao = $id "
+                    . " ORDER BY numeroItem ";
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
                 $objectArray = $this->fillArray($row);

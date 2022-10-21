@@ -227,7 +227,7 @@ function formatValue($value) {
                     REQ
                 </div>
                 <div class="status<?= $requisitante[0] ?>" id="requisitanteStatus">
-                    <h4><?= $requisitante[0] === "Next" ? $requisitante[1] : $marcador; ?></h4>
+                    <h4><?= $requisitante[0] === "Next" || $requisitante[0] === "Yellow" ? $requisitante[1] : $marcador; ?></h4>
                 </div>
             </li>
             <li>
@@ -235,7 +235,7 @@ function formatValue($value) {
                     SALC
                 </div>
                 <div class="status<?= $salc1[0] ?>" id="salc1Status">
-                    <h4><?= $salc1[0] === "Next" ? $salc1[1] : $marcador; ?></h4>
+                    <h4><?= $salc1[0] === "Next" || $salc1[0] === "Yellow" ? $salc1[1] : $marcador; ?></h4>
                 </div>
             </li>
             <li>
@@ -243,7 +243,7 @@ function formatValue($value) {
                     CONF
                 </div>
                 <div class="status<?= $conformidade[0] ?>" id="conformidadeStatus">
-                    <h4><?= $conformidade[0] === "Next" ? $conformidade[1] : $marcador; ?></h4>
+                    <h4><?= $conformidade[0] === "Next" || $conformidade[0] === "Yellow" ? $conformidade[1] : $marcador; ?></h4>
                 </div>
             </li>
             <li>
@@ -251,7 +251,7 @@ function formatValue($value) {
                     SALC
                 </div>
                 <div class="status<?= $salc2[0] ?>" id="salc2Status">
-                    <h4><?= $salc2[0] === "Next" ? $salc2[1] : $marcador; ?></h4>
+                    <h4><?= $salc2[0] === "Next" || $salc2[0] === "Yellow"? $salc2[1] : $marcador; ?></h4>
                 </div>
             </li>
             <li>
@@ -259,7 +259,7 @@ function formatValue($value) {
                     <?= $object->getResponsavel() === "Aprovisionamento" ? "APROV" : "ALMOX" ?>
                 </div>
                 <div class="status<?= $almox[0] ?>" id="almoxarifadoStatus">
-                    <h4><?= $almox[0] === "Next" ? $almox[1] : $marcador; ?></h4>
+                    <h4><?= $almox[0] === "Next" || $almox[0] === "Yellow" ? $almox[1] : $marcador; ?></h4>
                 </div>
             </li>
             <li>
@@ -267,7 +267,7 @@ function formatValue($value) {
                     TESO
                 </div>
                 <div class="status<?= $tesouraria[0] ?>" id="tesourariaStatus">
-                    <h4><?= $tesouraria[0] === "Next" ? $tesouraria[1] : "FIM"; ?></h4>
+                    <h4><?= $tesouraria[0] === "Next" || $tesouraria[0] === "Yellow" ? $tesouraria[1] : "FIM"; ?></h4>
                 </div>
             </li>
         </ul>
