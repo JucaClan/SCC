@@ -59,6 +59,7 @@ if ($action === "processo_update" || $action === "processo_insert") {
                             <option value="IPM" <?= $object->getTipo() == "IPM" ? "selected" : "" ?>>IPM</option>
                             <option value="Processo de averiguacao" <?= $object->getTipo() == "Processo de averiguacao" ? "selected" : "" ?>>Processo de averiguação</option>
                             <option value="TCA ADM" <?= $object->getTipo() == "TCA ADM" ? "selected" : "" ?>>TCA ADM</option>
+                            <option value="PAS" <?= $object->getTipo() == "PAS" ? "selected" : "" ?>>PAS</option>
                         </select>
                         <div class="valid-feedback">&nbsp;</div>
                         <div class="invalid-feedback">&nbsp;</div>

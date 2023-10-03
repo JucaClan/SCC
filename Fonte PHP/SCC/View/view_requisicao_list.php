@@ -506,13 +506,14 @@ function formatValue($value) {
             <?php
             if (is_array($notaCreditoList) && isAdminLevel($LISTAR_FISCALIZACAO_NC)) {
                 foreach ($notaCreditoList as $object) {
+                    $totalEmpenhado = number_format($object->getTotalEmpenhado(), 2, ",", ".");
                     ?> 
                     <tr>
                         <td><?= dateFormat($object->getDataNc()) ?></td>
                         <td><?= $object->getNc() ?></td>
                         <td><?= $object->getPi() ?></td>
                         <td>R$ <?= $object->getValor() ?></td>
-                        <td>R$ <?= number_format($object->getTotalEmpenhado(), 2, ",", ".") ?></td>
+                        <td><?= $totalEmpenhado >= $object->getValor() ? "<span style='color: red;font-weight: bold;'>R$ $totalEmpenhado</span>" : "<span style='color: green;font-weight: bold;'>R$ $totalEmpenhado</span>" ?></td>
                         <td><?= $object->getGestorNc() ?></td>
                         <td><?= $object->getPtres() ?></td>
                         <td><?= $object->getFonte() ?></td>

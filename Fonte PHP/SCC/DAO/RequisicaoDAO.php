@@ -67,7 +67,7 @@ class RequisicaoDAO {
             }
             $sql .= "COMMIT;";
             //$stmt = $c->prepare($sql);
-            //$sqlOk = $stmt ? $stmt->execute() : false;                 
+            //$sqlOk = $stmt ? $stmt->execute() : false;                
             $sqlOk = $c->multi_query($sql);
             $c->close();
             return $sqlOk;
@@ -189,7 +189,7 @@ class RequisicaoDAO {
             $c = connect();
             $sql = "SELECT * "
                     . " FROM Requisicao "
-                    . " INNER JOIN NotaCredito ON NotaCredito_idNotaCredito = idNotaCredito "
+                    . " LEFT JOIN NotaCredito ON NotaCredito_idNotaCredito = idNotaCredito "
                     . " LEFT JOIN NotaFiscal ON Requisicao_idRequisicao = idRequisicao ";
             if (
                     $filtro["idSecao"] > 0 ||
@@ -202,7 +202,7 @@ class RequisicaoDAO {
             ) {
                 $sql .= " WHERE ";
                 if ($filtro["ano"] > 0) {
-                    $sql .= " dataNE >= '" . $filtro["ano"] . "-01-01' AND dataNE <= '" . $filtro["ano"] . "-12-31' ";
+                    $sql .= " dataNE >= '" . $filtro["ano"] . "-01-01' AND dataNE <= '" . $filtro["ano"] . "-12-31' OR (dataNE IS NULL OR dataNE = '') ";
                 }
                 if ($filtro["idSecao"] > 0) {
                     if ($filtro["ano"] > 0) {
@@ -226,7 +226,7 @@ class RequisicaoDAO {
                     if ($filtro["ano"] > 0 || $filtro["idSecao"] > 0 || $filtro["idNotaCredito"] > 0 || !empty($filtro["ug"])) {
                         $sql .= " AND ";
                     }
-                    $sql .= " ne = '" . $filtro["ne"] . "'";
+                    $sql .= " ne LIKE '%" . $filtro["ne"] . "%'";
                 }
                 if ($filtro["materiaisEntregues"] === 1) {
                     if ($filtro["ano"] > 0 || $filtro["idSecao"] > 0 || $filtro["idNotaCredito"] > 0 || !empty($filtro["ug"]) || !empty($filtro["ne"])) {
@@ -242,7 +242,7 @@ class RequisicaoDAO {
                 }
             }
             $sql .= " GROUP BY idRequisicao"
-                    . " ORDER BY dataNE, dataRequisicao";
+                    . " ORDER BY dataNE, dataRequisicao";            
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
                 $objectArray = $this->fillArray($row);

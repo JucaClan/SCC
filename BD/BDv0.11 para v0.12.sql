@@ -371,7 +371,7 @@ CREATE TABLE IF NOT EXISTS `scc`.`Requisicao` (
   `NotaCredito_idNotaCredito` INT NULL,
   `Categoria_idCategoria` INT NULL,
   `modalidade` VARCHAR(70) NULL,
-  `numeroModalidade` SMALLINT NULL,
+  `numeroModalidade` VARCHAR(14) NULL,
   `ug` INT NULL,
   `omModalidade` VARCHAR(125) NULL,
   `empresa` VARCHAR(250) NULL,

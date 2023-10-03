@@ -27,7 +27,7 @@
  *
  * @author gustavodauer
  */
-$VERSAO = "16.12";
+$VERSAO = "19.14";
 $SOFTWARE = "SCC";
 $TODAS_SECOES = array("SALC", "Conformidade", "Almoxarifado", "Tesouraria", "S1", "S2", "S3", "S4", "FS", "Juridico", "Fiscalizacao", "RP", "SecInfo", "Comando");
 $ADMINISTRADORES = array("S2", "SecInfo", "Comando");
@@ -87,14 +87,13 @@ $ADICIONAR_CATEGORIA = array("Almoxarifado", "SecInfo");
 $EDITAR_CATEGORIA = array("Almoxarifado", "SecInfo");
 $EXCLUIR_CATEGORIA = array("SecInfo");
 
+$LISTAR_COMANDO = array("Comando", "SecInfo");
+$ADICIONAR_COMANDO = array("Comando", "SecInfo");
+$EDITAR_COMANDO = array("Comando", "SecInfo");
+$EXCLUIR_COMANDO = array("Comando", "SecInfo");
 
 // INEXISTENTES
 $LISTAR_SECINFO = array("SecInfo");
 $ADICIONAR_SECINFO = array("SecInfo");
 $EDITAR_SECINFO = array("SecInfo");
 $EXCLUIR_SECINFO = array("SecInfo");
-
-$LISTAR_COMANDO = array("Comando", "SecInfo");
-$ADICIONAR_COMANDO = array("Comando", "SecInfo");
-$EDITAR_COMANDO = array("Comando", "SecInfo");
-$EXCLUIR_COMANDO = array("Comando", "SecInfo");

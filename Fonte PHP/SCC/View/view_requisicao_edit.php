@@ -61,7 +61,7 @@ require_once '../include/header.php';
                     <div class="input-group-prepend">
                         <span class="input-group-text">Nota de Crédito</span>
                         <select class="form-control" name="idNotaCredito">
-                            <option value="" disabled required <?= $object->getIdNotaCredito() > 0 ? "" : "selected"; ?>>Selecione uma nota de crédito</option>
+                            <option value="" disabled <?= $object->getIdNotaCredito() > 0 ? "" : "selected"; ?>>Selecione uma nota de crédito</option>
                             <?php
                             $notaCreditoList = $notaCreditoDAO->getAllList();
                             if (!empty($notaCreditoList) && $notaCreditoList != null) {

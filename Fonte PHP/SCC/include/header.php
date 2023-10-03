@@ -110,7 +110,14 @@ require_once '../include/comum.php';
         $address = $_SERVER['REQUEST_URI'];
         $secoes = $_SESSION["sccsecoes"];
         ?>        
-        <ul class="nav nav-tabs" style="margin-top: 2px;">       
+        <ul class="nav nav-tabs" style="margin-top: 2px;">  
+            <?php if (isAdminLevel($LISTAR_COMANDO)) { ?>
+                <li class="nav-item">
+                    <a class="nav-link <?= substr_count($address, "ComandoController") > 0 ? "active" : ""; ?>" href='../Controller/ComandoController.php?action=getAllList&resolvido=0'>
+                        <img src="../include/imagens/comando.png" height="35" hspace="2"> Comando
+                    </a>                        
+                </li>
+            <?php } ?>
             <?php if (isAdminLevel($LISTAR_S1) || isAdminLevel($LISTAR_JURIDICO)) { ?>
                 <li class="nav-item">
                     <a class="nav-link <?= substr_count($address, "S1Controller") > 0 ? "active" : ""; ?>" href='../Controller/S1Controller.php?action=getAllList'>

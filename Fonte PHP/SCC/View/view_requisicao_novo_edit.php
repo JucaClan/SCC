@@ -259,7 +259,7 @@ require_once '../include/header.php';
         $conformidade = $timeline->getConformidade();
         $salc2 = $timeline->getSalc2();
         $almox = $timeline->getAlmox();
-        $tesouraria = $timeline->getTesouraria();
+        $tesouraria = $timeline->getTesouraria();                
         ?>
         <div>
             <ul class="timeline">
@@ -323,7 +323,7 @@ require_once '../include/header.php';
         }
         if (isAdminLevel($REQUISITANTES) && $isOwner) { // Verifica se é requisitante e se é o dono
             $readonly = false;
-        }
+        }                
         ?>
         <div class="conteudo" style="border: 1px dashed lightskyblue; padding: 7px;">            
             <h2 class="alert alert-info">
@@ -337,7 +337,7 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Data Requisição</span>
-                                <input type="date" class="form-control" id="dataRequisicao" name="dataRequisicao" value="<?= $object->getDataRequisicao() ?>" required <?= !$readonly ? "" : "disabled" ?> />
+                                <input type="date" class="form-control" id="dataRequisicao" name="dataRequisicao" value="<?= $object->getDataRequisicao(); ?>" <?= !$readonly ? "" : "disabled" ?> />
                             </div>                    
                         </div>
                         <div class="col">
@@ -350,7 +350,7 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">OM</span>                        
-                                <select class="form-control" name="om" required <?= !$readonly ? "" : "disabled" ?>>
+                                <select class="form-control" name="om" <?= !$readonly ? "" : "disabled" ?>>
                                     <option value="2becmb" <?= $object->getOm() === "2becmb" ? "selected" : "" ?>>2º BE Cmb</option>
                                     <option value="11cia" <?= $object->getOm() === "11cia" ? "selected" : "" ?>>11ª Cia E Cmb L</option>
                                     <option value="12cia" <?= $object->getOm() === "12cia" ? "selected" : "" ?>>12ª Cia E Cmb L</option>
@@ -367,7 +367,7 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Seção</span>                        
-                                <select class="form-control" name="idSecao" required <?= !$readonly ? "" : "disabled" ?>>
+                                <select class="form-control" name="idSecao" <?= !$readonly ? "" : "disabled" ?>>
                                     <?php
                                     if (!empty($secaoList) && $secaoList != null) {
                                         foreach ($secaoList as $secao) {
@@ -399,8 +399,8 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Nota de Crédito</span>
-                                <select class="form-control" name="idNotaCredito" required <?= !$readonly ? "" : "disabled" ?>>
-                                    <option value="" disabled required <?= $object->getIdNotaCredito() > 0 ? "" : " selected"; ?>>Selecione uma nota de crédito</option>
+                                <select class="form-control" name="idNotaCredito" <?= !$readonly ? "" : "disabled" ?>>
+                                    <option value="" disabled <?= $object->getIdNotaCredito() > 0 ? "" : " selected"; ?>>Selecione uma nota de crédito</option>
                                     <?php
                                     $notaCreditoList = $notaCreditoDAO->getAllList();
                                     if (!empty($notaCreditoList) && $notaCreditoList != null) {
@@ -438,8 +438,8 @@ require_once '../include/header.php';
                         <div class="col">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Categoria</span>
-                                <select class="form-control" name="idCategoria" required <?= !$readonly ? "" : "disabled" ?>>
-                                    <option value="" disabled required <?= $object->getIdCategoria() > 0 ? "" : " selected" ?>>Escolha uma categoria para requisição</option>
+                                <select class="form-control" name="idCategoria" <?= !$readonly ? "" : "disabled" ?>>
+                                    <option value="" disabled <?= $object->getIdCategoria() > 0 ? "" : " selected" ?>>Escolha uma categoria para requisição</option>
                                     <?php
                                     if (!empty($categoriaList) && $categoriaList != null) {
                                         foreach ($categoriaList as $categoria) {
@@ -463,8 +463,8 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Modalidade</span>
-                                <select name="modalidade" class="form-control" required <?= !$readonly ? "" : "disabled" ?>>
-                                    <option value="" disabled required <?= !empty($object->getModalidade()) ? "" : " selected" ?>>Escolha uma modalidade para requisição</option>
+                                <select name="modalidade" class="form-control" <?= !$readonly ? "" : "disabled" ?>>
+                                    <option value="" disabled <?= !empty($object->getModalidade()) ? "" : " selected" ?>>Escolha uma modalidade para requisição</option>
                                     <option value="pe" <?= $object->getModalidade() === "pe" ? "selected" : "" ?>>Pregão Eletrônico</option>
                                     <option value="ce" <?= $object->getModalidade() === "ce" ? "selected" : "" ?>>Cotação Eletrônica</option>
                                 </select>
@@ -480,7 +480,7 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Identificador da modalidade</span>
-                                <input type="text" class="form-control" id="numeroModalidade" placeholder="Exemplo: 01  (Cotação Eletrônica nº 01)" name="numeroModalidade" maxlength="7" onkeypress="return event.charCode >= 48 && event.charCode <= 57;" value="<?= $object->getNumeroModalidade() ?>" required  <?= !$readonly ? "" : "disabled" ?> onchange="checkZeroFillFields(this);" />
+                                <input type="text" class="form-control" id="numeroModalidade" placeholder="Exemplo: 01  (Cotação Eletrônica nº 01)" name="numeroModalidade" maxlength="7" onkeypress="return event.charCode >= 48 && event.charCode <= 57;" value="<?= $object->getNumeroModalidade() ?>"  <?= !$readonly ? "" : "disabled" ?> onchange="checkZeroFillFields(this);" />
                             </div>                    
                         </div>
                         <div class="col">
@@ -493,7 +493,7 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Código UG</span>
-                                <input type="text" class="form-control" id="ug" placeholder="Exemplo: 160477" name="ug" maxlength="6" onkeypress="return event.charCode >= 48 && event.charCode <= 57;" value="<?= $object->getUg() ?>" required <?= !$readonly ? "" : "disabled" ?> onchange="checkZeroFillFields(this);" />
+                                <input type="text" class="form-control" id="ug" placeholder="Exemplo: 160477" name="ug" maxlength="6" onkeypress="return event.charCode >= 48 && event.charCode <= 57;" value="<?= $object->getUg() ?>" <?= !$readonly ? "" : "disabled" ?> onchange="checkZeroFillFields(this);" />
                             </div>                    
                         </div>
                         <div class="col">
@@ -506,7 +506,7 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">UG</span>
-                                <input type="text" class="form-control" id="omModalidade" placeholder="Exemplo: 2º BE Cmb" name="omModalidade" maxlength="125" value="<?= $object->getOmModalidade() ?>" required <?= !$readonly ? "" : "disabled" ?> />
+                                <input type="text" class="form-control" id="omModalidade" placeholder="Exemplo: 2º BE Cmb" name="omModalidade" maxlength="125" value="<?= $object->getOmModalidade() ?>" <?= !$readonly ? "" : "disabled" ?> />
                             </div>                             
                         </div>
                         <div class="col">
@@ -519,7 +519,7 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Empresa</span>
-                                <input type="text" class="form-control" id="empresa" placeholder="Nome da Empresa responsável" name="empresa" maxlength="250" value="<?= $object->getEmpresa() ?>" required <?= !$readonly ? "" : "disabled" ?> />
+                                <input type="text" class="form-control" id="empresa" placeholder="Nome da Empresa responsável" name="empresa" maxlength="250" value="<?= $object->getEmpresa() ?>" <?= !$readonly ? "" : "disabled" ?> />
                             </div>                    
                         </div>
                         <div class="col">
@@ -532,7 +532,7 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">CNPJ</span>
-                                <input type="text" class="form-control" id="cnpj" placeholder="CNPJ da Empresa responsável" name="cnpj" maxlength="18"  onkeypress="return event.charCode >= 48 && event.charCode <= 57;" value="<?= $object->getCnpj() ?>" required <?= !$readonly ? "" : "disabled" ?> />
+                                <input type="text" class="form-control" id="cnpj" placeholder="CNPJ da Empresa responsável" name="cnpj" maxlength="18"  onkeypress="return event.charCode >= 48 && event.charCode <= 57;" value="<?= $object->getCnpj() ?>" <?= !$readonly ? "" : "disabled" ?> />
                             </div>                    
                         </div>
                         <div class="col">
@@ -545,7 +545,7 @@ require_once '../include/header.php';
                         <div class="col">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Contato</span>
-                                <textarea class="form-control" name="contato" placeholder="Informações de contato da Empresa responsável" maxlength="520" required <?= !$readonly ? "" : "disabled" ?>><?= $object->getContato() ?></textarea>
+                                <textarea class="form-control" name="contato" placeholder="Informações de contato da Empresa responsável" maxlength="520" <?= !$readonly ? "" : "disabled" ?>><?= $object->getContato() ?></textarea>
                             </div>
                         </div>
                         <div class="col">
