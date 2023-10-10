@@ -34,7 +34,7 @@ $hoje = date('Y-m-d');
 <script src="../include/js/jquery-mask/jquery.mask.min.js"></script>
 <div class="container">  
     <form accept-charset="UTF-8" action="../Controller/S2Controller.php?action=veiculo<?= $object->getId() > 0 ? "update" : "insert" ?>&id=<?= $object->getId() ?>" class="needs-validation" novalidate method="post">
-        <h2><?= $object->getId() > 0 ? "Editar" : "Inserir" ?> Visitante | <a href="#" onclick="history.back(-1);">Voltar</a> | <button type="submit" class="btn btn-primary">Salvar</button></h2>
+        <h2><?= $object->getId() > 0 ? "Editar" : "Inserir" ?> Veículo | <a href="#" onclick="history.back(-1);">Voltar</a> | <button type="submit" class="btn btn-primary">Salvar</button></h2>
         <hr>    
         <input type="hidden" name="lastURL" value="<?= $_SERVER["HTTP_REFERER"] ?>">          
         <div class="form-group">
@@ -90,8 +90,7 @@ $hoje = date('Y-m-d');
                         <div class="invalid-feedback">&nbsp;</div>
                     </div> 
                     <br>
-                    <!-- acima -->
-                    <input type="checkbox" style="margin: 14px;" id="temporario" name="temporario" value="1" <?= $object->getTemporario() == 1 ? "checked" : ""; ?>>Prestador de serviço autorizado temporariamente
+                    <!-- acima -->                    
                 </div>                                
             </div>
         </div>            
