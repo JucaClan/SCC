@@ -138,6 +138,6 @@ class Veiculo {
     }
 
     public function validate() {
-        return $this->nome != null && !empty($this->nome);
+        return $this->tipoVeiculo != null && !empty($this->tipoVeiculo);
     }
 }

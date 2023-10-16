@@ -41,56 +41,75 @@ $hoje = date('Y-m-d');
             <div class="form-row">                 
                 <div class="col">                      
                     <div class="input-group-prepend">
-                        <span class="input-group-text">Tipo Veículo</span>
-                        <input type="text" class="form-control" id="tipoVeiculo" placeholder="Qual o tipo do veiculo?" name="tipoVeiculo" oninput="this.value = this.value.toUpperCase()" required onchange="check();" maxlength="125" value="<?= $object->getTipoVeiculo() ?>" required>
+                        <span class="input-group-text">Tipo Veículo</span>                        
+                        <select name="tipoVeiculo" class="form-control" required>                                                                                       
+                            <option value="" <?= $object->getTipoVeiculo() == "" ? "selected" : "" ?> disabled>Selecione um tipo de veículo</option>                                
+                            <option value="Civil" <?= $object->getTipoVeiculo() == "Civil" ? "selected" : "" ?>>Civil</option>                            
+                            <option value="Militar" <?= $object->getTipoVeiculo() == "Militar" ? "selected" : "" ?>>Militar</option>   
+                        </select>
                         <div class="valid-feedback">&nbsp;</div>
                         <div class="invalid-feedback">&nbsp;Obrigatório</div>
                     </div>
-                    <br>
+                </div>
+                <div class="col">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Placa</span>
                         <input type="text" class="form-control" id="Placa" placeholder="Qual a placa do veiculo?" name="placa"  maxlength="16" value="<?= $object->getPlaca() ?>">
                         <div class="valid-feedback">&nbsp;</div>
                         <div class="invalid-feedback">&nbsp;</div>
-                    </div>  
-                    <br>
+                    </div>
+                </div>
+            </div>
+        </div>        
+        <div class="form-group">
+            <div class="form-row"> 
+                <div class="col">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Modelo</span>
                         <input type="text" class="form-control" id="modelo" placeholder="Qual o modelo do veiculo?" name="modelo"  maxlength="14" value="<?= $object->getModelo() ?>">
                         <div class="valid-feedback">&nbsp;</div>
                         <div class="invalid-feedback">&nbsp;</div>
                     </div>
-                    <br>
+                </div>
+                <div class="col">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Cor</span>
-                        <input type="text" class="form-control" id="cor" placeholder="Qual a cor do veiculo?" name="cor"  maxlength="250" value="<?= $object->getCor() ?>">
+                        <input type="color" class="form-control" id="cor" placeholder="Qual a cor do veiculo?" name="cor"  maxlength="250" value="<?= $object->getCor() ?>">
                         <div class="valid-feedback">&nbsp;</div>
                         <div class="invalid-feedback">&nbsp;</div>
                     </div>
-                    <br>
+                </div>
+            </div>
+        </div>     
+        <div class="form-group">
+            <div class="form-row"> 
+                <div class="col">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Nome Completo</span>
                         <input type="text" class="form-control" id="nomeCompleto" name="nomeCompleto" placeholder="Qual o nome completo?" value="<?= $object->getNomeCompleto(); ?>">
                         <div class="valid-feedback">&nbsp;</div>
                         <div class="invalid-feedback">&nbsp;</div>
                     </div>  
-                    <br>
-                    <!-- abaixo -->
+                </div> 
+                <div class="col">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Identidade</span>
-                        <input type="text" class="form-control" id="identidade" name="identidade" placeholder="Qual a identidade?" value="<?= $object->getIdentidade(); ?>">
+                        <input type="text" class="form-control" id="identidade" name="identidade" placeholder="Qual o CPF?" value="<?= $object->getIdentidade(); ?>">
                         <div class="valid-feedback">&nbsp;</div>
                         <div class="invalid-feedback">&nbsp;</div>
                     </div> 
-                    <br>
+                </div> 
+            </div> 
+        </div> 
+        <div class="form-group">
+            <div class="form-row"> 
+                <div class="col">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Destino</span>
                         <input type="text" class="form-control" id="destino" name="destino" placeholder="Qual o destino?" value="<?= $object->getDestino(); ?>">
                         <div class="valid-feedback">&nbsp;</div>
                         <div class="invalid-feedback">&nbsp;</div>
-                    </div> 
-                    <br>
-                    <!-- acima -->                    
+                    </div>                                                         
                 </div>                                
             </div>
         </div>            
@@ -144,7 +163,7 @@ $hoje = date('Y-m-d');
         <div class="form-group">
             <div class="form-row">
                 <div class="col">                    
-                                     
+
                 </div>                                               
             </div>
         </div>
@@ -177,8 +196,8 @@ $hoje = date('Y-m-d');
     };
 
     $(document).ready(function () {
-        $('[name=telefone]').mask('(00)#0000-0000');
-        $('[name=cpf]').mask('000.000.000-00');
+        $('[name=placa]').mask('SSS-0A00');
+        $('[name=identidade]').mask('000.000.000-00');
     });
 </script>
 <?php

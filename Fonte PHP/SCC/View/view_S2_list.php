@@ -71,6 +71,7 @@ $hoje = new DateTime();
     </div>   
     <br>
     <?php
+    $alert = "";
     $dateDif = date_diff(new DateTime($secaoDAO->getBySecao("S2")->getDataAtualizacaoOriginal()), $hoje);
     if ($dateDif->format('%R') == "+" && $dateDif->format('%a') >= 7) {
         $color = "red";
