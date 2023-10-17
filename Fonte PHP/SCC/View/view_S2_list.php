@@ -71,6 +71,7 @@ $hoje = new DateTime();
     </div>   
     <br>
     <?php
+    $alert = "";
     $dateDif = date_diff(new DateTime($secaoDAO->getBySecao("S2")->getDataAtualizacaoOriginal()), $hoje);
     if ($dateDif->format('%R') == "+" && $dateDif->format('%a') >= 7) {
         $color = "red";
@@ -137,7 +138,7 @@ $hoje = new DateTime();
                             <?= $object->getTipoVeiculo() ?> / <?= $object->getPlaca() ?>
                         </td>
                         <td>
-                            <?= $object->getModelo() ?> / <?= $object->getCor() ?>
+                            <?= $object->getModelo() ?> / <input type="color" value="<?= $object->getCor() ?>" disabled>
                         </td>         
                         <td><?= $object->getNomeCompleto() ?> / <?= $object->getIdentidade() ?></td>
                         <td><?= $object->getDestino() ?></td>

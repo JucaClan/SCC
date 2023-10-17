@@ -59,8 +59,8 @@ class S2Controller {
         $this->veiculoInstance->setNomeCompleto(filter_input(INPUT_POST, "nomeCompleto", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->veiculoInstance->setIdentidade(filter_input(INPUT_POST, "identidade", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->veiculoInstance->setDestino(filter_input(INPUT_POST, "destino", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
-        $this->veiculoInstance->setDataEntrada(filter_input(INPUT_POST, "dataEntrada", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
-        $this->veiculoInstance->setDataSaida(filter_input(INPUT_POST, "dataSaida", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));       
+        $this->veiculoInstance->setDataEntrada(filter_input(INPUT_POST, "dataEntrada", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES) . " " . filter_input(INPUT_POST, "horaEntrada", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
+        $this->veiculoInstance->setDataSaida(filter_input(INPUT_POST, "dataSaida", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES) . " " . filter_input(INPUT_POST, "horaSaida", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));       
         $this->mensagem = filter_input(INPUT_POST, "mensagem", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES);        
     }
 
@@ -82,12 +82,12 @@ class S2Controller {
     /**
      * Insert new object on the database or require the view of the form
      */
-    public function veiculoInsert() {
-        try {
+    public function veiculoInsert() {       
+        try {            
             $this->getFormData();
             $this->veiculoDAO = new VeiculoDAO();
-            $secaoDAO = new SecaoDAO();            
-            if ($this->veiculoInstance->validate()) { // Check if the input form was filled correctly and proceed to DAO or Require de view of the form
+            $secaoDAO = new SecaoDAO();     
+            if ($this->veiculoInstance->validate()) { // Check if the input form was filled correctly and proceed to DAO or Require de view of the form                
                 if ($this->veiculoDAO->insert($this->veiculoInstance)) {
                     $secaoDAO->updateDataAtualizacao("S2");
                     header("Location: " . filter_input(INPUT_POST, "lastURL"));
@@ -170,11 +170,11 @@ class S2Controller {
 // POSSIBLE ACTIONS
 $action = $_REQUEST["action"];
 $controller = new S2Controller();
-switch ($action) {
+switch ($action) {            
     case "getAllList":
         !isAdminLevel($LISTAR_S2) ? redirectToLogin() : $controller->getAllList();
         break;
-    case "veiculo_insert":
+    case "veiculo_insert":           
         !isAdminLevel($ADICIONAR_S2) ? redirectToLogin() : $controller->veiculoInsert();
         break;
     case "veiculo_update":
