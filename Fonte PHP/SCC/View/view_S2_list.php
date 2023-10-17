@@ -138,7 +138,7 @@ $hoje = new DateTime();
                             <?= $object->getTipoVeiculo() ?> / <?= $object->getPlaca() ?>
                         </td>
                         <td>
-                            <?= $object->getModelo() ?> / <?= $object->getCor() ?>
+                            <?= $object->getModelo() ?> / <input type="color" value="<?= $object->getCor() ?>" disabled>
                         </td>         
                         <td><?= $object->getNomeCompleto() ?> / <?= $object->getIdentidade() ?></td>
                         <td><?= $object->getDestino() ?></td>

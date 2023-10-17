@@ -39,16 +39,16 @@ class VeiculoDAO {
                     . "tipoVeiculo, placa, modelo, cor, nomeCompleto, identidade, destino, dataEntrada, dataSaida "
                     . ") "
                     . "VALUES("
-                    . "'" . $object->getTipoVeiculo() . "', "
-                    . "'" . $object->getPlaca() . "', "
-                    . "'" . $object->getModelo() . "', "
-                    . "'" . $object->getCor() . "' "
-                    . "'" . $object->getNomeCompleto() . "' "
-                    . "'" . $object->getIdentidade() . "' "
-                    . "'" . $object->getDestino() . "' "
+                    . "'" . $object->getTipoVeiculo() . "'"
+                    . ", '" . $object->getPlaca() . "'"
+                    . ", '" . $object->getModelo() . "'"
+                    . ", '" . $object->getCor() . "'"
+                    . ", '" . $object->getNomeCompleto() . "'"
+                    . ", '" . $object->getIdentidade() . "'"
+                    . ", '" . $object->getDestino() . "'"
                     . ", " . (!empty($object->getDataEntrada()) ? "'" . $object->getDataEntrada() . "' " : " NULL ")
                     . ", " . (!empty($object->getDataSaida()) ? "'" . $object->getDataSaida() . "' " : " NULL ")                
-                    . ");";                                                    
+                    . ");";           
             $stmt = $c->prepare($sql);
             $sqlOk = $stmt ? $stmt->execute() : false;            
             $c->close();
@@ -56,19 +56,20 @@ class VeiculoDAO {
         } catch (Exception $e) {
             throw($e);
         }
+        return true;
     }
 
     public function update($object) {
         try {
             $c = connect();
             $sql = "UPDATE Veiculo SET "
-                    . "tipoVeiculo = '" . $object->getTipoVeiculo() . "', "
-                    . "placa = '" . $object->getPlaca() . "', "
-                    . "modelo = '" . $object->getModelo() . "', "
-                    . "cor = '" . $object->getCor() . "' "
-                    . "nomeCompleto = '" . $object->getNomeCompleto() . "' "
-                    . "identidade = '" . $object->getIdentidade() . "' "
-                    . "destino = '" . $object->getDestino() . "' "                
+                    . "tipoVeiculo = '" . $object->getTipoVeiculo() . "'"
+                    . ", placa = '" . $object->getPlaca() . "'"
+                    . ", modelo = '" . $object->getModelo() . "'"
+                    . ", cor = '" . $object->getCor() . "'"
+                    . ", nomeCompleto = '" . $object->getNomeCompleto() . "'"
+                    . ", identidade = '" . $object->getIdentidade() . "'"
+                    . ", destino = '" . $object->getDestino() . "'"                
                     . ", dataEntrada = " . (!empty($object->getDataEntrada()) ? "'" . $object->getDataEntrada() . "' " : "NULL ")
                     . ", dataSaida = " . (!empty($object->getDataSaida()) ? "'" . $object->getDataSaida() . "' " : "NULL ")                    
                     . " WHERE idVeiculo = " . $object->getId() . ";";            
@@ -101,7 +102,7 @@ class VeiculoDAO {
             $sql = "SELECT *, "
                     . "DATE_FORMAT(dataEntrada, '%H:%i em %d/%m/%Y') as dataEntrada, "
                     . "DATE_FORMAT(dataSaida, '%H:%i em %d/%m/%Y') as dataSaida "
-                    . " FROM Visitante "
+                    . " FROM Veiculo "
                     . (!empty($filtro["inicio"]) || !empty($filtro["fim"]) ? " WHERE " : "")
                     . (!empty($filtro["inicio"]) ? " dataEntrada >= '" . $filtro["inicio"] . "' AND " : "")
                     . (!empty($filtro["fim"]) && !empty($filtro["inicio"]) ? " dataEntrada <= '" . $filtro["fim"] . "' " : "")

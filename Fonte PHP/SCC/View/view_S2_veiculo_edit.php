@@ -33,7 +33,7 @@ $hoje = date('Y-m-d');
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="../include/js/jquery-mask/jquery.mask.min.js"></script>
 <div class="container">  
-    <form accept-charset="UTF-8" action="../Controller/S2Controller.php?action=veiculo<?= $object->getId() > 0 ? "update" : "insert" ?>&id=<?= $object->getId() ?>" class="needs-validation" novalidate method="post">
+    <form accept-charset="UTF-8" action="../Controller/S2Controller.php?action=veiculo_<?= $object->getId() > 0 ? "update" : "insert" ?>&id=<?= $object->getId() ?>" class="needs-validation" novalidate method="post">
         <h2><?= $object->getId() > 0 ? "Editar" : "Inserir" ?> Veículo | <a href="#" onclick="history.back(-1);">Voltar</a> | <button type="submit" class="btn btn-primary">Salvar</button></h2>
         <hr>    
         <input type="hidden" name="lastURL" value="<?= $_SERVER["HTTP_REFERER"] ?>">          
@@ -54,7 +54,7 @@ $hoje = date('Y-m-d');
                 <div class="col">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Placa</span>
-                        <input type="text" class="form-control" id="Placa" placeholder="Qual a placa do veiculo?" name="placa"  maxlength="16" value="<?= $object->getPlaca() ?>">
+                        <input type="text" class="form-control" id="Placa" placeholder="Qual a placa do veiculo?" name="placa" maxlength="10" oninput="this.value = this.value.toUpperCase()" value="<?= $object->getPlaca() ?>">
                         <div class="valid-feedback">&nbsp;</div>
                         <div class="invalid-feedback">&nbsp;</div>
                     </div>
@@ -66,7 +66,7 @@ $hoje = date('Y-m-d');
                 <div class="col">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Modelo</span>
-                        <input type="text" class="form-control" id="modelo" placeholder="Qual o modelo do veiculo?" name="modelo"  maxlength="14" value="<?= $object->getModelo() ?>">
+                        <input type="text" class="form-control" id="modelo" placeholder="Qual o modelo do veiculo?" name="modelo" oninput="this.value = this.value.toUpperCase()" maxlength="30" value="<?= $object->getModelo() ?>">
                         <div class="valid-feedback">&nbsp;</div>
                         <div class="invalid-feedback">&nbsp;</div>
                     </div>
@@ -74,7 +74,7 @@ $hoje = date('Y-m-d');
                 <div class="col">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Cor</span>
-                        <input type="color" class="form-control" id="cor" placeholder="Qual a cor do veiculo?" name="cor"  maxlength="250" value="<?= $object->getCor() ?>">
+                        <input type="color" class="form-control" id="cor" placeholder="Qual a cor do veiculo?" name="cor"  maxlength="20" value="<?= $object->getCor() ?>">
                         <div class="valid-feedback">&nbsp;</div>
                         <div class="invalid-feedback">&nbsp;</div>
                     </div>
@@ -86,7 +86,7 @@ $hoje = date('Y-m-d');
                 <div class="col">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Nome Completo</span>
-                        <input type="text" class="form-control" id="nomeCompleto" name="nomeCompleto" placeholder="Qual o nome completo?" value="<?= $object->getNomeCompleto(); ?>">
+                        <input type="text" class="form-control" id="nomeCompleto" name="nomeCompleto" placeholder="Qual o nome completo?" maxlength="80" oninput="this.value = this.value.toUpperCase()" value="<?= $object->getNomeCompleto(); ?>">
                         <div class="valid-feedback">&nbsp;</div>
                         <div class="invalid-feedback">&nbsp;</div>
                     </div>  
@@ -106,7 +106,7 @@ $hoje = date('Y-m-d');
                 <div class="col">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Destino</span>
-                        <input type="text" class="form-control" id="destino" name="destino" placeholder="Qual o destino?" value="<?= $object->getDestino(); ?>">
+                        <input type="text" class="form-control" id="destino" name="destino" maxlength="70" oninput="this.value = this.value.toUpperCase()" placeholder="Qual o destino?" value="<?= $object->getDestino(); ?>">
                         <div class="valid-feedback">&nbsp;</div>
                         <div class="invalid-feedback">&nbsp;</div>
                     </div>                                                         
@@ -141,7 +141,7 @@ $hoje = date('Y-m-d');
                     </div>                    
                 </div>
                 <div class="col">                                       
-                    <input type="time" class="form-control" id="horaEntrada" name="horaEntrada"value="<?= $dataEntrada[1] ?>" required>                        
+                    <input type="time" class="form-control" id="horaEntrada" name="horaEntrada"value="<?= $dataEntrada[1] ?>">                        
                 </div>
             </div>
         </div>
