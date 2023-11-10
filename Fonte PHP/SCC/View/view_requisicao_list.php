@@ -30,7 +30,7 @@ require_once '../include/header.php';
 $hoje = new DateTime();
 // FILTROS
 $idSecao = filter_input(INPUT_GET, "idSecao", FILTER_VALIDATE_INT);
-$idNotaCredito = filter_input(INPUT_GET, "idNotaCredito", FILTER_VALIDATE_INT);
+$idNotaCredito = filter_input(INPUT_GET, "idNotaCredito", FILTER_VALIDATE_INT) > 0 ? filter_input(INPUT_GET, "idNotaCredito", FILTER_VALIDATE_INT) : 0;
 $ug = filter_input(INPUT_GET, "ug", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES);
 $ne = filter_input(INPUT_GET, "ne", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES);
 $materiaisEntregues = filter_input(INPUT_GET, "materiaisEntregues", FILTER_VALIDATE_INT);
@@ -107,7 +107,7 @@ function formatValue($value) {
         color: #00cc00;/*#000;*/
         font-size: 10px;
     }
-    
+
     .timestampYellow {
         margin-bottom: 2px;
         padding: 0px 4px;
@@ -151,7 +151,7 @@ function formatValue($value) {
         height: 1px;
         background-color: #ccffcc;
     }
-    
+
     .statusYellow {
         padding: 0px 4px;
         display: flex;
@@ -187,9 +187,9 @@ function formatValue($value) {
         font-size: 10px;
         margin-top: 7px;
     }
-    
+
     .statusYellow h4 {
-        color: #cccc00; 
+        color: #cccc00;
         font-weight: normal;
         font-size: 10px;
         margin-top: 7px;
@@ -251,7 +251,7 @@ function formatValue($value) {
                     SALC
                 </div>
                 <div class="status<?= $salc2[0] ?>" id="salc2Status">
-                    <h4><?= $salc2[0] === "Next" || $salc2[0] === "Yellow"? $salc2[1] : $marcador; ?></h4>
+                    <h4><?= $salc2[0] === "Next" || $salc2[0] === "Yellow" ? $salc2[1] : $marcador; ?></h4>
                 </div>
             </li>
             <li>
@@ -341,10 +341,12 @@ function formatValue($value) {
                                         <option disabled selected>Filtrar por Nota de crédito</option>
                                         <?php
                                         $notaCreditoSelectList = $notaCreditoDAO->getAllList();
+                                        $notaCredito = new NotaCredito();
+                                        $idNotaCredito = 0;
                                         if (!empty($notaCreditoSelectList) && $notaCreditoSelectList != null) {
                                             foreach ($notaCreditoSelectList as $notaCredito) {
                                                 ?>
-                                                <option value="<?= $notaCredito->getId() ?>" <?= $idNotaCredito == $notaCredito->getId() ? "selected" : "" ?>><?= $notaCredito->getNc() ?></option>
+                                                <option value="<?= $notaCredito->getId() ?>" <?=  $idNotaCredito == $notaCredito->getId() ? "selected" : ""  ?>><?= $notaCredito->getNc()  ?></option>
                                                 <?php
                                             }
                                         } else {
@@ -352,7 +354,7 @@ function formatValue($value) {
                                             if (!empty($notaCreditoSelectList) && $notaCreditoSelectList != null) {
                                                 foreach ($notaCreditoSelectList as $notaCredito) {
                                                     ?>
-                                                    <option value="<?= $notaCredito->getId() ?>" <?= $notaCredito->getId() == $idNotaCredito ? " selected" : "" ?>><?= $notaCredito->getNc() ?></option>
+                                                    <option value="<?= $notaCredito->getId();  ?>" <?= $notaCredito->getId() == $idNotaCredito ? " selected" : ""  ?>><?=  $notaCredito->getNc()  ?></option>
                                                     <?php
                                                 }
                                             }
@@ -434,7 +436,7 @@ function formatValue($value) {
                     ?> 
                     <tr style="height: 95px;">
                         <td><?= $object->getIdNotaCredito() > 0 ? $notaCreditoDAO->getById($object->getIdNotaCredito())->getUg() : "" ?></td>
-                        <td><?= $object->getOm() . " / " . $secaoDAO->getById($object->getIdSecao())->getSecao(); ?> </td>                        
+                        <td><?= $object->getOm() . " / " . $object->getIdSecao() > 0 ? $secaoDAO->getById($object->getIdSecao())->getSecao() : ""; ?> </td>                  
                         <td><a href="#" data-toggle="tooltip" data-placement="top" title="<?= $object->getIdNotaCredito() > 0 ? $notaCreditoDAO->getById($object->getIdNotaCredito())->getNc() : $object->getIdNotaCredito() ?>"><?= $object->getNe() ?></a></td>
                         <td><?= dateFormat($object->getDataNE()) ?></td>                        
                         <td>R$ <?= number_format($object->getValorNE(), 2, ",", ".") ?></td>                        

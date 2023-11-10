@@ -118,12 +118,15 @@ class SecaoDAO {
     }
 
     public function getById($id) {
+        if (empty($id) || $id == 0) {
+            return null;
+        }
         try {
             $c = connect();
             $sql = "SELECT *, "
                     . "DATE_FORMAT(dataAtualizacao, '%d/%m/%Y %H:%i') as dataAtualizacao, DATE_FORMAT(dataAtualizacao, '%Y/%m/%d') as dataAtualizacaoOriginal "
                     . " FROM Secao "
-                    . " WHERE idSecao = $id";
+                    . " WHERE idSecao = $id";            
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
                 $objectArray = $this->fillArray($row);
@@ -185,5 +188,4 @@ class SecaoDAO {
             "mensagem" => $row["mensagem"]
         );
     }
-
 }

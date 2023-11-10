@@ -13,7 +13,7 @@ class RequisicaoDAO {
                     . " VALUES("
                     . (!empty($object->getDataRequisicao()) ? "'" . $object->getDataRequisicao() . "' " : "NULL ")
                     . ", '" . $object->getOm() . "'"
-                    . ", " . $object->getIdSecao()
+                    . ", " . (!empty($object->getIdSecao()) ? $object->getIdSecao() : "NULL ")
                     . ", " . (!empty($object->getIdNotaCredito()) ? $object->getIdNotaCredito() : "NULL ")
                     . ", " . (!empty($object->getIdCategoria()) ? $object->getIdCategoria() : "NULL ")
                     . ", '" . $object->getModalidade() . "'"
@@ -51,7 +51,8 @@ class RequisicaoDAO {
                     . ", " . (!empty($object->getDataProtocoloSalc2()) ? "'" . $object->getDataProtocoloSalc2() . "' " : "NULL ")
                     . ", " . (!empty($object->getDataProtocoloAlmox()) ? "'" . $object->getDataProtocoloAlmox() . "' " : "NULL ")
                     . ", '" . $object->getResponsavel() . "'"
-                    . ");SET @idRequisicao = LAST_INSERT_ID();";
+                    . ");SET @idRequisicao = LAST_INSERT_ID();"
+                    . " SELECT @idRequisicao AS idRequisicaoInsert; ";
             $itemList = $object->getItemList();
             if (!is_null($itemList)) {
                 foreach ($itemList as $item) {
@@ -66,9 +67,16 @@ class RequisicaoDAO {
                 }
             }
             $sql .= "COMMIT;";
-            //$stmt = $c->prepare($sql);
-            //$sqlOk = $stmt ? $stmt->execute() : false;                
             $sqlOk = $c->multi_query($sql);
+            $lastId = 0;
+            do {
+                if ($result = $c->store_result()) {
+                    while ($row = $result->fetch_row()) {
+                        $lastId = $row[0];
+                    }
+                }
+            } while ($c->next_result());
+            $sqlOk = $sqlOk == false ? false : $lastId;
             $c->close();
             return $sqlOk;
         } catch (Exception $e) {
@@ -242,7 +250,7 @@ class RequisicaoDAO {
                 }
             }
             $sql .= " GROUP BY idRequisicao"
-                    . " ORDER BY dataNE, dataRequisicao";            
+                    . " ORDER BY dataNE, dataRequisicao";
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
                 $objectArray = $this->fillArray($row);
@@ -374,7 +382,7 @@ class RequisicaoDAO {
                             (dataLiquidacao != '' AND dataLiquidacao IS NOT NULL) AND 
                             idNotaFiscal = NotaFiscal_idNotaFiscal
                         INNER JOIN Requisicao ON 
-                            idRequisicao = $id";            
+                            idRequisicao = $id";
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
                 $quantidade = $row["quantidade"];
@@ -432,5 +440,4 @@ class RequisicaoDAO {
             "itemList" => ""
         );
     }
-
 }

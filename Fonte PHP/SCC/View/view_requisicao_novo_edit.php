@@ -337,7 +337,7 @@ require_once '../include/header.php';
                         <div class="col">                    
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Data Requisição</span>
-                                <input type="date" class="form-control" id="dataRequisicao" name="dataRequisicao" value="<?= $object->getDataRequisicao(); ?>" <?= !$readonly ? "" : "disabled" ?> />
+                                <input type="date" class="form-control" id="dataRequisicao" name="dataRequisicao" value="<?= empty($object->getDataRequisicao()) ? date('Y-m-d') : $object->getDataRequisicao(); ?>" <?= !$readonly ? "" : "disabled" ?> />
                             </div>                    
                         </div>
                         <div class="col">

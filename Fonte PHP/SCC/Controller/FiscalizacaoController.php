@@ -17,6 +17,8 @@ class FiscalizacaoController {
     private $requisicaoInstance, $itemInstance, $notaCreditoInstance, $notaFiscalInstance;
 
     function getFormData() {
+        // Liberar campos obrigatórios para uso da Tesouraria
+        $today = date('Y-m-d');
         // FILTROS
         $this->filtro = array(
             "idSecao" => filter_input(INPUT_GET, "idSecao", FILTER_VALIDATE_INT),
@@ -29,8 +31,9 @@ class FiscalizacaoController {
         );
         // REQUISIÇÃO
         $this->requisicaoInstance = new Requisicao();
-        $id = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
-        $this->requisicaoInstance->setId(!empty($id) ? $id : (filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT)));
+        $id = empty(filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT)) ? filter_input(INPUT_POST, "idRequisicao", FILTER_VALIDATE_INT) : filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
+        $id = !empty($id) ? $id : filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
+        $this->requisicaoInstance->setId(!empty($id) ? $id : (filter_input(INPUT_GET, "idRequisicao", FILTER_VALIDATE_INT)));
         $this->requisicaoInstance->setDataRequisicao(filter_input(INPUT_POST, "dataRequisicao", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setOm(filter_input(INPUT_POST, "om", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $this->requisicaoInstance->setIdSecao(filter_input(INPUT_POST, "idSecao", FILTER_VALIDATE_INT));
@@ -84,7 +87,7 @@ class FiscalizacaoController {
         $item->setNumeroItem(filter_input(INPUT_POST, "numeroItem", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $item->setDescricao(filter_input(INPUT_POST, "descricaoItem", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         $item->setQuantidade(filter_input(INPUT_POST, "quantidade", FILTER_VALIDATE_INT));
-        $item->setValor(str_replace(",", ".", filter_input(INPUT_POST, "valor", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES)));          
+        $item->setValor(str_replace(",", ".", filter_input(INPUT_POST, "valor", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES)));
         $item->setIdRequisicao(filter_input(INPUT_POST, "idRequisicao", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES));
         if (!empty($item->getNumeroItem())) {
             $itemList[] = $item;
@@ -130,18 +133,17 @@ class FiscalizacaoController {
         $reqItemList = null;
         while (!is_null($idItem)) {
             $idNotaFiscal = filter_input(INPUT_POST, "idNotaFiscal$i", FILTER_VALIDATE_INT);
-            $quantidadeItem = filter_input(INPUT_POST, "quantidadeItem$i", FILTER_VALIDATE_INT); 
+            $quantidadeItem = filter_input(INPUT_POST, "quantidadeItem$i", FILTER_VALIDATE_INT);
             $quantidadeItem = is_int($quantidadeItem) ? $quantidadeItem : 0;
             $idItem = filter_input(INPUT_POST, "idItem$i", FILTER_VALIDATE_INT);
             $reqItemList[] = array(
                 "idNotaFiscal" => $idNotaFiscal,
                 "quantidadeItem" => $quantidadeItem,
                 "idItem" => $idItem
-            );            
+            );
             $i++;
             $idItem = filter_input(INPUT_POST, "idItem$i", FILTER_VALIDATE_INT);
-        }        
-        //exit();
+        }
         $this->notaFiscalInstance->setItemList($reqItemList);
         // SEÇÃO
         $this->mensagem = filter_input(INPUT_POST, "mensagem", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_SANITIZE_ADD_SLASHES);
@@ -189,6 +191,7 @@ class FiscalizacaoController {
         try {
             $this->getFormData();
             $requisicaoDAO = new RequisicaoDAO();
+            $secaoDAO = new SecaoDAO();
             if (!empty($this->requisicaoInstance->getId())) {
                 if ($requisicaoDAO->delete($this->requisicaoInstance->getId())) {
                     $secaoDAO->updateDataAtualizacao("Fiscalizacao");
@@ -255,7 +258,7 @@ class FiscalizacaoController {
             $requisicaoDAO = new RequisicaoDAO();
             $secaoDAO = new SecaoDAO();
             $notaCreditoDAO = new NotaCreditoDAO();
-            $itemDAO = new ItemDAO();            
+            $itemDAO = new ItemDAO();
             $notaCreditoList = $notaCreditoDAO->getAllList($this->filtro);
             $objectList = $requisicaoDAO->getAllList($this->filtro);
             $secaoList = $secaoDAO->getAllList($this->filtro);
@@ -329,6 +332,22 @@ class FiscalizacaoController {
     function notaFiscalInsert() {
         try {
             $this->getFormData();
+            // TODO
+            // Checar se o ID da requisicao = 0 e fazer a inserção automática de
+            //  uma requisição redirecionando para o cadastro de notas fiscais 
+            //  para a respectiva requisição
+            // Caso não o id da requisicao > 0, executar o fluxo normalmente
+            if ($this->requisicaoInstance->getId() == 0) {
+                $requisicaoDAO = new RequisicaoDAO();
+                $this->requisicaoInstance->setDataRequisicao(date('Y-m-d'));
+                $lastId = $requisicaoDAO->insert($this->requisicaoInstance);                                          
+                if ($lastId > 0) {                    
+                    header("Location: FiscalizacaoController.php?action=insert_nf&idRequisicao=" . $lastId);                    
+                } else {
+                    echo "Problemas!";
+                }
+                exit();
+            }
             $notaFiscalDAO = new NotaFiscalDAO();
             $secaoDAO = new SecaoDAO();
             $itemDAO = new ItemDAO();
@@ -407,7 +426,6 @@ class FiscalizacaoController {
             require_once '../View/view_error.php';
         }
     }
-
 }
 
 $action = $_REQUEST["action"];

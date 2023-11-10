@@ -46,8 +46,7 @@ class NotaCreditoDAO {
                     . ", '" . $object->getFonte() . "' "
                     . ", '" . $object->getUg() . "' "
                     . ");";
-            $stmt = $c->prepare($sql);
-            //echo $sql;exit();
+            $stmt = $c->prepare($sql);            
             $sqlOk = $stmt ? $stmt->execute() : false;
             $c->close();
             return $sqlOk;
@@ -96,36 +95,32 @@ class NotaCreditoDAO {
     public function getAllList($filtro = "") {
         try {            
             $c = connect();
-//            $sql = "SELECT * "
-//                    . ", REPLACE(valor, '.', ',') AS valor "
-//                    . ", REPLACE(valorRecolhido, '.', ',') AS valorRecolhido "
-//                    . ", DATE_FORMAT(dataNc, '%d/%m/%Y') as dataNc "
-//                    . " FROM NotaCredito ";
             $sql = "SELECT *, SUM(valorNE) AS totalEmpenhado "
                     . ", REPLACE(valor, '.', ',') AS valor "
                     . ", REPLACE(valorRecolhido, '.', ',') AS valorRecolhido "
                     //. ", DATE_FORMAT(dataNc, '%d/%m/%Y') as dataNc "
                     . " FROM NotaCredito "
-                    . " LEFT JOIN Requisicao ON idNotaCredito = NotaCredito_idNotaCredito ";            
-            if (
-                    $filtro["idNotaCredito"] > 0 ||
-                    $filtro["ano"] > 0
-            ) {
-                $sql .= " WHERE ";
-                if ($filtro["ano"] > 0) {
-                    $sql .= " dataNc >= '" . $filtro["ano"] . "-01-01' AND dataNc <= '" . $filtro["ano"] . "-12-31' ";
-                }
-                if ($filtro["idNotaCredito"] > 0) {
-                    if ($filtro["ano"] > 0) {
-                        $sql .= " AND ";
-                    }
-                    $sql .= " idNotaCredito = " . $filtro["idNotaCredito"];
-                }
-            }
-            $sql .= " GROUP BY idNotaCredito ";
-            $sql .= ($filtro["notaCreditoAtivas"] === 0 || $filtro["notaCreditoAtivas"] === 1) ? 
-                    " HAVING SUM(valorNE) " . ($filtro["notaCreditoAtivas"] === 0 ? ">=" : "<") . " NotaCredito.valor " . (($filtro["notaCreditoAtivas"] === 1) ? " || SUM(valorNE) IS NULL " : "") : "";
-            $sql .= " ORDER BY dataNc";            
+                    . " LEFT JOIN Requisicao ON idNotaCredito = NotaCredito_idNotaCredito ";
+            // BUG - VERIFICAR
+//            if (
+//                    $filtro["idNotaCredito"] > 0 ||
+//                    $filtro["ano"] > 0
+//            ) {
+//                $sql .= " WHERE ";
+//                if ($filtro["ano"] > 0) {
+//                    $sql .= " dataNc >= '" . $filtro["ano"] . "-01-01' AND dataNc <= '" . $filtro["ano"] . "-12-31' ";
+//                }
+//                if ($filtro["idNotaCredito"] > 0) {
+//                    if ($filtro["ano"] > 0) {
+//                        $sql .= " AND ";
+//                    }
+//                    $sql .= " idNotaCredito = " . $filtro["idNotaCredito"];
+//                }
+//            }
+//            $sql .= " GROUP BY idNotaCredito ";
+//            $sql .= ($filtro["notaCreditoAtivas"] === 0 || $filtro["notaCreditoAtivas"] === 1) ? 
+//                    " HAVING SUM(valorNE) " . ($filtro["notaCreditoAtivas"] === 0 ? ">=" : "<") . " NotaCredito.valor " . (($filtro["notaCreditoAtivas"] === 1) ? " || SUM(valorNE) IS NULL " : "") : "";
+//            $sql .= " ORDER BY dataNc";               
             $result = $c->query($sql);
             while ($row = $result->fetch_assoc()) {
                 $objectArray = $this->fillArray($row);
@@ -133,7 +128,7 @@ class NotaCreditoDAO {
                 $object->setTotalEmpenhado($row["totalEmpenhado"]);
                 $lista[] = $object;
             }
-            $c->close();
+            $c->close();            
             return isset($lista) ? $lista : null;
         } catch (Exception $e) {
             throw($e);
@@ -147,7 +142,7 @@ class NotaCreditoDAO {
                     . ", REPLACE(valor, '.', ',') AS valor "
                     . " FROM NotaCredito "
                     . " WHERE idNotaCredito = $id";
-            $result = $c->query($sql);
+            $result = $c->query($sql);            
             while ($row = $result->fetch_assoc()) {
                 $objectArray = $this->fillArray($row);
                 $instance = new NotaCredito($objectArray);
