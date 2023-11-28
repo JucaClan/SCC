@@ -88,7 +88,7 @@ function get_client_ip() {
 }
 
 function connect() {
-    $dbConfig = parse_ini_file('/var/www/scc.ini');
+    $dbConfig = parse_ini_file('C:\Users\Pyrate\Documents\GitHub\ini scc\scc.ini');
     $servername = $dbConfig['servername'];
     $username = $dbConfig['username'];
     $password = $dbConfig['password'];
